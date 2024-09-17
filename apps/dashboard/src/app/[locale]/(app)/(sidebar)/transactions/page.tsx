@@ -77,10 +77,11 @@ export default async function Transactions({
         <TransactionsSearchFilter
           placeholder="Search or type filter"
           categories={[
-            ...categoriesData?.data?.map((category) => ({
+            ...(categoriesData?.data?.map((category) => ({
+              id: category.id,
               slug: category.slug,
               name: category.name,
-            })),
+            })) ?? []),
             {
               // TODO, move this to the database
               id: "uncategorized",
@@ -90,12 +91,12 @@ export default async function Transactions({
           ]}
           accounts={accountsData?.data?.map((account) => ({
             id: account.id,
-            name: account.name,
-            currency: account.currency,
+            name: account.name ?? '',
+            currency: account.currency ?? '',
           }))}
           members={teamMembersData?.data?.map((member) => ({
-            id: member?.user?.id,
-            name: member.user?.full_name,
+            id: member.user?.id ?? '',
+            name: member.user?.full_name ?? '',
           }))}
         />
         <TransactionsActions isEmpty={isEmpty} />
