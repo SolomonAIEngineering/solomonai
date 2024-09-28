@@ -17,6 +17,7 @@ import {
 } from "@midday/ui/sheet";
 import { TrendingUpDown } from "lucide-react";
 import React, { useMemo } from "react";
+import { TransactionAnalyticsBreakdown } from "./transaction-analytics-breakdown";
 
 type Transaction = Tables<"transactions">;
 
@@ -155,7 +156,8 @@ export const TransactionAnalytics: React.FC<TransactionAnalyticsProps> = ({
             Detailed analysis of your transactions
           </SheetDescription>
         </SheetHeader>
-        <div className="grid gap-2 py-2">
+        <div className="grid gap-2 py-2 overflow-y-auto scrollbar-hide h-[calc(100vh-10rem)]">
+          <TransactionAnalyticsBreakdown transactions={transactions} />
           <AnalyticsCard
             title="Income and Expenses"
             value={`Income: ${formatMoney(analytics.totalIncome)}`}
