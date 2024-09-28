@@ -1,5 +1,6 @@
 import { TransactionAnalytics } from "@/components/bank-account/transaction-analytics";
 import { DataTable } from "@/components/tables/transactions/data-table";
+import { TransactionAnalyticsCharts } from "@/components/transaction-analytics/transaction-analytics";
 import { Cookies } from "@/utils/constants";
 import { getTransactions } from "@midday/supabase/cached-queries";
 import { cookies } from "next/headers";
@@ -67,6 +68,9 @@ export async function Table({
 
   return (
     <>
+    <div className="flex flex-col items-start justify-start">
+        <TransactionAnalyticsCharts transactions={data} />
+    </div>
       <div className="flex justify-end mb-4">
         {enableAnalytics && <TransactionAnalytics transactions={data} />}
       </div>

@@ -2,6 +2,7 @@ import { formatCurrency } from "@/utils/currency";
 import { Tables } from "@midday/supabase/types";
 import { Button } from "@midday/ui/button";
 import {
+  Card,
   CardContent,
   CardDescription,
   CardHeader,
@@ -15,8 +16,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@midday/ui/sheet";
-import { TrendingUpDown } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@midday/ui/tabs";
+import { ArrowDownIcon, ArrowUpIcon, BarChart3Icon, TrendingUpDown, TrendingUpIcon } from "lucide-react";
 import React, { useMemo } from "react";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { TransactionAnalyticsCharts } from "../transaction-analytics/transaction-analytics";
 import { TransactionAnalyticsBreakdown } from "./transaction-analytics-breakdown";
 
 type Transaction = Tables<"transactions">;
@@ -133,75 +137,112 @@ export const TransactionAnalytics: React.FC<TransactionAnalyticsProps> = ({
   const analytics = useMemo(
     () => computeAnalytics(transactions),
     [transactions],
-  );
-  const formatMoney = (amount: number) => formatCurrency(amount, currency);
+  )
+  const formatMoney = (amount: number) => formatCurrency(amount, currency)
   const averageAmount =
     analytics.transactionCount > 0
       ? analytics.averageTransactionAmount / analytics.transactionCount
-      : 0;
+      : 0
+
+  const chartData = [
+    { name: 'Income', value: analytics.totalIncome },
+    { name: 'Expenses', value: analytics.totalExpenses },
+  ]
 
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline">
-          <TrendingUpDown className="w-4 h-4 mr-2" strokeWidth={0.5} />
+          <BarChart3Icon className="w-4 h-4 mr-2" />
+          Analytics
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-[400px] sm:min-w-[540px]">
-        <SheetHeader className="p-[2%]">
-          <SheetTitle className="text-3xl font-bold">
-            Transaction Analytics
-          </SheetTitle>
-          <SheetDescription className="text-md">
-            Detailed analysis of your transactions
+      <SheetContent className="w-full sm:max-w-[600px] overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle className="text-3xl font-bold">Transaction Analytics</SheetTitle>
+          <SheetDescription className="text-lg">
+            Detailed analysis of your financial transactions
           </SheetDescription>
         </SheetHeader>
-        <div className="grid gap-2 py-2 overflow-y-auto scrollbar-hide h-[calc(100vh-10rem)]">
-          <TransactionAnalyticsBreakdown transactions={transactions} />
-          <AnalyticsCard
-            title="Income and Expenses"
-            value={`Income: ${formatMoney(analytics.totalIncome)}`}
-            subtext={`Expenses: ${formatMoney(analytics.totalExpenses)}`}
-          />
-          <AnalyticsCard
-            title="Net Cash Flow"
-            value={formatMoney(analytics.netCashFlow)}
-            valueClassName={
-              analytics.netCashFlow >= 0 ? "text-green-500" : "text-red-500"
-            }
-          />
-          <AnalyticsCard
-            title="Largest Transaction"
-            value={
-              analytics.largestTransaction
-                ? formatMoney(Math.abs(analytics.largestTransaction.amount))
-                : "N/A"
-            }
-            subtext={
-              analytics.largestTransaction?.description ??
-              "No transactions available"
-            }
-          />
-          <AnalyticsCard
-            title="Transaction Count"
-            value={analytics.transactionCount.toString()}
-            subtext={`Income: ${analytics.incomeTransactionCount}, Expenses: ${analytics.expenseTransactionCount}`}
-          />
-          <AnalyticsCard
-            title="Average Transaction"
-            value={formatMoney(averageAmount)}
-          />
-        </div>
+        <Tabs defaultValue="overview" className="mt-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="details">Details</TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview" className="mt-4 space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Income vs Expenses</CardTitle>
+              </CardHeader>
+              <CardContent className="h-[300px]">
+                {/* <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => formatMoney(value as number)} />
+                    <Bar dataKey="value" fill="#8884d8" />
+                  </BarChart>
+                </ResponsiveContainer> */}
+              </CardContent>
+            </Card>
+            <div className="grid gap-4 md:grid-cols-2">
+              <AnalyticsCard
+                title="Net Cash Flow"
+                value={formatMoney(analytics.netCashFlow)}
+                icon={analytics.netCashFlow >= 0 ? <TrendingUpIcon className="text-green-500" /> : <TrendingUpIcon className="text-red-500" />}
+                valueClassName={analytics.netCashFlow >= 0 ? "text-green-500" : "text-red-500"}
+              />
+              <AnalyticsCard
+                title="Largest Transaction"
+                value={analytics.largestTransaction ? formatMoney(Math.abs(analytics.largestTransaction.amount)) : "N/A"}
+                subtext={analytics.largestTransaction?.description ?? "No transactions available"}
+              />
+            </div>
+          </TabsContent>
+          <TabsContent value="details" className="mt-4 space-y-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <AnalyticsCard
+                title="Total Income"
+                value={formatMoney(analytics.totalIncome)}
+                icon={<ArrowUpIcon className="text-green-500" />}
+              />
+              <AnalyticsCard
+                title="Total Expenses"
+                value={formatMoney(analytics.totalExpenses)}
+                icon={<ArrowDownIcon className="text-red-500" />}
+              />
+              <AnalyticsCard
+                title="Transaction Count"
+                value={analytics.transactionCount.toString()}
+                subtext={`Income: ${analytics.incomeTransactionCount}, Expenses: ${analytics.expenseTransactionCount}`}
+              />
+              <AnalyticsCard
+                title="Average Transaction"
+                value={formatMoney(averageAmount)}
+              />
+              <AnalyticsCard
+                title="Recurring Transactions"
+                value={analytics.recurringTransactionsCount.toString()}
+              />
+              <AnalyticsCard
+                title="Manual Transactions"
+                value={analytics.manualTransactionsCount.toString()}
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
       </SheetContent>
     </Sheet>
-  );
-};
+  )
+}
 
 interface AnalyticsCardProps {
-  title: string;
-  value: string;
-  subtext?: string;
-  valueClassName?: string;
+  title: string
+  value: string
+  subtext?: string
+  valueClassName?: string
+  icon?: React.ReactNode
 }
 
 const AnalyticsCard: React.FC<AnalyticsCardProps> = ({
@@ -209,16 +250,18 @@ const AnalyticsCard: React.FC<AnalyticsCardProps> = ({
   value,
   subtext,
   valueClassName = "",
+  icon,
 }) => (
-  <div className="border-none shadow-none">
-    <CardHeader>
-      <CardTitle>{title}</CardTitle>
-      {subtext && (
-        <CardDescription className="text-sm mt-1">{subtext}</CardDescription>
-      )}
+  <Card>
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardTitle className="text-sm font-medium">{title}</CardTitle>
+      {icon}
     </CardHeader>
     <CardContent>
-      <p className={`text-2xl font-bold ${valueClassName}`}>{value}</p>
+      <div className={`text-2xl font-bold ${valueClassName}`}>{value}</div>
+      {subtext && (
+        <p className="text-xs text-muted-foreground mt-1">{subtext}</p>
+      )}
     </CardContent>
-  </div>
-);
+  </Card>
+)
