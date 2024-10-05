@@ -8,7 +8,9 @@ import { IncomeViewModal } from "@/components/modals/income/income-view-modal";
 import { OverviewViewModal } from "@/components/modals/overview/overview-view-modal";
 import { SubscriptionViewModal } from "@/components/modals/subscription/subscription-view-modal";
 import { TransactionViewModal } from "@/components/modals/transaction/transaction-view-modal";
+import AnalyticsLayout from "@/components/panel/admin-panel-layout";
 import { Sidebar } from "@/components/sidebar";
+import { TeamMenu } from "@/components/team-menu";
 import { setupAnalytics } from "@midday/events/server";
 import { getCountryCode } from "@midday/location";
 import { currencies, uniqueCurrencies } from "@midday/location/src/currencies";
@@ -69,12 +71,19 @@ const ConnectTransactionsModal = dynamic(
   },
 );
 
+const ClientSideAccessibilityWidget = dynamic(
+  () =>
+    import("@/components/accessibility-helper-widget").then(
+      (mod) => mod.AccessibilityWidget,
+    ),
+  { ssr: false },
+);
+
 export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-
   var user: any = null;
   try {
     user = await getUser();
@@ -94,15 +103,15 @@ export default async function Layout({
   // get the current users subscriptions from the database and ensure that the cache is invalidated
   // this is to ensure that the user's subscription is always up to date
   const invalidateCache = true;
-  const currentUserSubscription = await getUserSubscriptions(invalidateCache);
+  // const currentUserSubscription = await getUserSubscriptions(invalidateCache);
 
-  // if there are no subscriptions, redirect to payment page
-  if (
-    !currentUserSubscription?.data?.length ||
-    currentUserSubscription?.data[0]?.status === null
-  ) {
-      redirect("/payment");
-  }
+  // // if there are no subscriptions, redirect to payment page
+  // if (
+  //   !currentUserSubscription?.data?.length ||
+  //   currentUserSubscription?.data[0]?.status === null
+  // ) {
+  //     redirect("/payment");
+  // }
 
   // if the user does not have a team, redirect to the teams page
   if (!user?.data?.team) {
@@ -114,41 +123,50 @@ export default async function Layout({
   }
 
   return (
-    <div className="relative">
-      <AI initialAIState={{ user: user.data, messages: [], chatId: nanoid() }}>
-        <Sidebar />
+    <div className="h-screen w-screen overflow-hidden">
+      <AnalyticsLayout>
+        <AI
+          initialAIState={{ user: user.data, messages: [], chatId: nanoid() }}
+        >
+          {/* <Sidebar /> */}
+          <div className="mx-4 md:ml-[95px] md:mr-10 pb-8 overflow-auto relative">
+            {/* <Header /> */}
+            {children}
+            {/* <TeamMenu mode="button" /> */}
+            <div className="absolute bottom-4 left-4 flex items-center space-x-4">
+              <ClientSideAccessibilityWidget
+                email={user.data.email as string}
+                name={user.data.full_name as string}
+                id={user.data.id as string}
+                profilePicture={user.data.avatar_url as string}
+              />
+            </div>
 
-        <div className="mx-4 md:ml-[95px] md:mr-10 pb-8">
-          {/* <Header /> */}
-          {children}
-          <AccessibilityWidget
-            email={user.data.email as string}
-            name={user.data.full_name as string}
-            id={user.data.id as string}
-            profilePicture={user.data.avatar_url as string}
+            {/** TODO: may need to find a way to visualize this better */}
+            {/* <TeamMenu /> */}
+          </div>
+
+          {/* This is used to make the header draggable on macOS */}
+          <div className="hidden todesktop:block todesktop:[-webkit-app-region:drag] fixed top-0 w-full h-4 pointer-events-none" />
+
+          <AssistantModal />
+          <IncomeViewModal />
+          <ExpenseViewModal />
+          <SubscriptionViewModal />
+          <TransactionViewModal />
+          <OverviewViewModal />
+          <ConnectTransactionsModal countryCode={countryCode} />
+          <SelectBankAccountsModal />
+          <ImportModal
+            currencies={uniqueCurrencies}
+            defaultCurrency={
+              currencies[countryCode as keyof typeof currencies] || "USD"
+            }
           />
-        </div>
-
-        {/* This is used to make the header draggable on macOS */}
-        <div className="hidden todesktop:block todesktop:[-webkit-app-region:drag] fixed top-0 w-full h-4 pointer-events-none" />
-
-        <AssistantModal />
-        <IncomeViewModal />
-        <ExpenseViewModal />
-        <SubscriptionViewModal />
-        <TransactionViewModal />
-        <OverviewViewModal />
-        <ConnectTransactionsModal countryCode={countryCode} />
-        <SelectBankAccountsModal />
-        <ImportModal
-          currencies={uniqueCurrencies}
-          defaultCurrency={
-            currencies[countryCode as keyof typeof currencies] || "USD"
-          }
-        />
-        <ExportStatus />
-        <HotKeys />
-      </AI>
+          <ExportStatus />
+          <HotKeys />
+        </AI>
+      </AnalyticsLayout>
     </div>
   );
 }
