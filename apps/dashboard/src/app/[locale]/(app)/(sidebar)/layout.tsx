@@ -129,7 +129,7 @@ export default async function Layout({
           initialAIState={{ user: user.data, messages: [], chatId: nanoid() }}
         >
           {/* <Sidebar /> */}
-          <div className="mx-4 md:ml-[95px] md:mr-10 pb-8 overflow-auto relative">
+          <div className="mx-4 md:mx-5 pb-8 overflow-auto relative">
             {/* <Header /> */}
             {children}
             {/* <TeamMenu mode="button" /> */}
