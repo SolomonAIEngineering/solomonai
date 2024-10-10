@@ -2,6 +2,7 @@ import { Database } from "@midday/supabase/types";
 import { IOWithIntegrations } from "@trigger.dev/sdk";
 import { Supabase } from "@trigger.dev/supabase";
 import { BankAccountWithConnection } from "../types/bank-account-with-connection";
+import { uniqueLog } from "../utils/log";
 
 /**
  * Fetches enabled bank accounts for a specific team and bank connection.
@@ -43,7 +44,9 @@ async function fetchEnabledBankAccountsSubTask(
     `${taskKeyPrefix}-fetch-enabled-bank-accounts`,
     async () => {
       // Fetch enabled bank accounts
-      console.log("Fetching enabled bank accounts");
+      await uniqueLog(
+        io,
+        "info", "Fetching enabled bank accounts");
       const { data: accountsData } = await supabase
         .from("bank_accounts")
         .select(
@@ -54,7 +57,9 @@ async function fetchEnabledBankAccountsSubTask(
         .eq("enabled", true)
         .returns<BankAccountWithConnection[]>();
 
-      console.log(`Found ${accountsData?.length || 0} enabled bank accounts`);
+      await uniqueLog(
+        io,
+        "info", `Found ${accountsData?.length || 0} enabled bank accounts`);
       return accountsData;
     },
     { name: "Fetching enabled bank accounts" }
@@ -76,7 +81,9 @@ async function fetchEnabledBankAccountsForTeamSubTask(
   const data = await io.runTask(
     `${taskKeyPrefix}-fetch-enabled-bank-accounts`,
     async () => {
-      console.log("Fetching enabled bank accounts");
+      await uniqueLog(
+        io,
+        "info", "Fetching enabled bank accounts");
       let query = supabase
         .from("bank_accounts")
         .select(
@@ -99,7 +106,9 @@ async function fetchEnabledBankAccountsForTeamSubTask(
         return null;
       }
 
-      console.log(`Found ${accountsData?.length || 0} enabled bank accounts`);
+      await uniqueLog(
+        io,
+        "info", `Found ${accountsData?.length || 0} enabled bank accounts`);
       return accountsData;
     },
     { name: "Fetching enabled bank accounts" }

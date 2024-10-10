@@ -9,6 +9,7 @@ import { fetchEnabledBankAccountsSubTask } from "../subtasks/fetch-enabled-bank-
 import { syncTransactionsSubTask } from "../subtasks/sync-transactions";
 import { updateBankConnectionStatus } from "../subtasks/update-bank-connection-status";
 import { parseAPIError } from "../utils/error";
+import { uniqueLog } from "../utils/log";
 
 client.defineJob({
   id: Jobs.TRANSACTIONS_MANUAL_SYNC,
@@ -41,16 +42,21 @@ client.defineJob({
    * @throws {Error} If any error occurs during processing
    */
   run: async (payload, io) => {
-    console.log("Starting manual sync job");
+    io.logger.log("Starting manual sync job");
     const supabase = io.supabase.client;
 
     const { teamId, connectionId } = payload;
-    console.log(
+    await uniqueLog(
+      io,
+      "info",
       `Processing for teamId: ${teamId}, connectionId: ${connectionId}`
     );
 
     // Fetch enabled bank accounts
-    console.log("Fetching enabled bank accounts");
+    await uniqueLog(
+      io,
+      "info",
+      "Fetching enabled bank accounts");
     const prefix = `manual-sync-${teamId}-${connectionId}`;
 
     // Fetch enabled bank accounts for the team
@@ -61,7 +67,10 @@ client.defineJob({
       `${prefix}-fetch-enabled-bank-accounts`
     );
 
-    console.log(`Found ${accountsData?.length || 0} enabled bank accounts`);
+    await uniqueLog(
+      io,
+      "info", 
+      `Found ${accountsData?.length || 0} enabled bank accounts`);
 
     try {
       // execute the sync transactions subtask for the accounts enabled for the team
@@ -70,7 +79,10 @@ client.defineJob({
       console.error("Error occurred during processing:", error);
       if (error instanceof FinancialEngine.APIError) {
         const parsedError = parseAPIError(error);
-        console.log("Parsed API error:", parsedError);
+        await uniqueLog(
+          io,
+          "info", 
+          "Parsed API error:", parsedError);
 
         // Function to check if a status is allowed
         const isAllowedStatus = (
@@ -88,7 +100,10 @@ client.defineJob({
           ? parsedError.code
           : "unknown";
 
-        console.log(`Updating bank connection status to ${status}`);
+        await uniqueLog(
+          io,
+          "info", 
+          `Updating bank connection status to ${status}`);
         await updateBankConnectionStatus(
           io,
           connectionId,
@@ -97,14 +112,20 @@ client.defineJob({
           parsedError.message
         );
 
-        console.log("Bank connection status updated due to error");
+        await uniqueLog(
+          io,
+          "info", 
+          "Bank connection status updated due to error");
       }
 
       throw new Error(error instanceof Error ? error.message : String(error));
     }
 
     // Update bank connection status
-    console.log("Updating bank connection status to 'connected'");
+    await uniqueLog(
+      io,
+      "info", 
+      "Updating bank connection status to 'connected'");
     await updateBankConnectionStatus(
       io,
       connectionId,
@@ -112,7 +133,10 @@ client.defineJob({
       prefix,
       null
     );
-    console.log("Bank connection status updated successfully");
+    await uniqueLog(
+      io,
+      "info", 
+      "Bank connection status updated successfully");
 
     // Revalidate data tags
     console.log("Revalidating tags");
@@ -126,11 +150,12 @@ client.defineJob({
       `expenses_${teamId}`,
     ];
     tagsToRevalidate.forEach((tag) => {
-      console.log(`Revalidating tag: ${tag}`);
       revalidateTag(tag);
     });
-    console.log("All tags revalidated");
+    await uniqueLog(
+      io,
+      "info", 
+      "All tags revalidated. Manual sync job completed successfully");
 
-    console.log("Manual sync job completed successfully");
   },
 });

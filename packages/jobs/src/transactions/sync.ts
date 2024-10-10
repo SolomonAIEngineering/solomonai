@@ -2,6 +2,7 @@ import { client, supabase } from "../client";
 import { Jobs } from "../constants";
 import { fetchEnabledBankAccountsForTeamSubTask } from "../subtasks/fetch-enabled-bank-account";
 import { syncTransactionsSubTask } from "../subtasks/sync-transactions";
+import { uniqueLog } from "../utils/log";
 import { scheduler } from "./scheduler";
 
 client.defineJob({
@@ -28,14 +29,20 @@ client.defineJob({
    * 5. Revalidate relevant cache tags
    */
   run: async (_, io, ctx) => {
-    console.log("Starting TRANSACTIONS_SYNC job");
+    await uniqueLog(
+      io,
+      "info","Starting TRANSACTIONS_SYNC job");
     const supabase = io.supabase.client;
     const teamId = ctx.source?.id as string;
-    console.log(`Processing for team ID: ${teamId}`);
+    await uniqueLog(
+      io,
+      "info",`Processing for team ID: ${teamId}`);
     const prefix = `team-txn-sync-${teamId}-${Date.now()}`;
 
     // 1. Fetch enabled bank accounts for the team
-    console.log("Fetching enabled bank accounts");
+    await uniqueLog(
+      io,
+      "info","Fetching enabled bank accounts");
     const accountsData = await fetchEnabledBankAccountsForTeamSubTask(
       io,
       teamId,
@@ -43,7 +50,9 @@ client.defineJob({
       { excludeManual: true }
     );
 
-    console.log(`Found ${accountsData?.length || 0} enabled bank accounts`);
+    await uniqueLog(
+      io,
+      "info",`Found ${accountsData?.length || 0} enabled bank accounts`);
 
     try {
       // execute the sync transactions subtask for the accounts enabled for the team
@@ -53,7 +62,9 @@ client.defineJob({
       throw new Error(error instanceof Error ? error.message : String(error));
     }
 
-    console.log("TRANSACTIONS_SYNC job completed");
+    await uniqueLog(
+      io,
+      "info","TRANSACTIONS_SYNC job completed");
   },
 });
 

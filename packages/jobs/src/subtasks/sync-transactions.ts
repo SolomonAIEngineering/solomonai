@@ -4,6 +4,7 @@ import { Supabase } from "@trigger.dev/supabase";
 import { BATCH_LIMIT } from "../constants/constants";
 import { BankAccountWithConnection } from "../types/bank-account-with-connection";
 import { engine } from "../utils/engine";
+import { uniqueLog } from "../utils/log";
 import { processBatch } from "../utils/process";
 import { getClassification, transformTransaction } from "../utils/transform";
 import { updateBankConnectionStatus } from "./update-bank-connection-status";
@@ -45,14 +46,22 @@ async function syncTransactionsSubTask(
     `${taskKeyPrefix.toLocaleLowerCase()}-sync-transactions-subtask-${Date.now()}`,
     async () => {
       const promises = accountsData?.map(async (account) => {
-        console.log(`Processing account: ${account.id}`);
-        console.log(`Account type: ${account.type}`);
+        await uniqueLog(
+          io,
+          "info", `Processing account: ${account.id}`);
+        await uniqueLog(
+          io,
+          "info", `Account type: ${account.type}`);
 
         const accountType = getClassification(account.type);
-        console.log(`Classified account type: ${accountType}`);
+        await uniqueLog(
+          io,
+          "info", `Classified account type: ${accountType}`);
 
         // Fetch transactions for the account
-        console.log(`Fetching transactions for account ${account.id}`);
+        await uniqueLog(
+          io,
+          "info", `Fetching transactions for account ${account.id}`);
         const transactions = await engine.transactions.list({
           provider: account.bank_connection.provider,
           accountId: account.account_id,
@@ -66,12 +75,16 @@ async function syncTransactionsSubTask(
           accessToken: account.bank_connection?.access_token,
           latest: "true",
         });
-        console.log(
+        await uniqueLog(
+          io,
+          "info",
           `Retrieved ${transactions.data?.length || 0} transactions for account ${account.id} (Type: ${accountType})`
         );
 
         // Transform transactions
-        console.log(`Transforming transactions for account ${account.id}`);
+        await uniqueLog(
+          io,
+          "info", `Transforming transactions for account ${account.id}`);
         const formattedTransactions = transactions.data?.map((transaction) => {
           return transformTransaction({
             transaction,
@@ -79,35 +92,45 @@ async function syncTransactionsSubTask(
             bankAccountId: account.id,
           });
         });
-        console.log(
+        await uniqueLog(
+          io,
+          "info",
           `Transformed ${formattedTransactions?.length || 0} transactions`
         );
 
         // Fetch and update account balance
-        console.log(`Fetching balance for account ${account.id}`);
+        await uniqueLog(
+          io,
+          "info", `Fetching balance for account ${account.id}`);
         const balance = await engine.accounts.balance({
           provider: account.bank_connection.provider,
           id: account.account_id,
           accessToken: account.bank_connection?.access_token,
         });
-        console.log(
+        await uniqueLog(
+          io,
+          "info",
           `Retrieved balance for account ${account.id}: ${balance.data?.amount}`
         );
 
         if (balance.data?.amount) {
-          console.log(`Updating balance for account ${account.id}`);
+          await uniqueLog(
+            io,
+            "info", `Updating balance for account ${account.id}`);
           await supabase
             .from("bank_accounts")
             .update({
               balance: balance.data.amount,
             })
             .eq("id", account.id);
-          console.log(`Balance updated for account ${account.id}`);
+          await uniqueLog(
+            io,
+            "info", `Balance updated for account ${account.id}`);
 
           // Update bank connection status to connected
           await updateBankConnectionStatus(
             io,
-            account.bank_connection ?.id,
+            account.bank_connection?.id,
             "connected",
             taskKeyPrefix,
             null
@@ -115,14 +138,18 @@ async function syncTransactionsSubTask(
         }
 
         // Process transactions in batches
-        console.log(
+        await uniqueLog(
+          io,
+          "info",
           `Processing transactions in batches for account ${account.id}`
         );
         await processBatch(
           formattedTransactions,
           BATCH_LIMIT,
           async (batch) => {
-            console.log(
+            await uniqueLog(
+              io,
+              "info",
               `Processing batch of ${batch.length} transactions for account ${account.id}`
             );
             const { data, error } = await supabase
@@ -137,22 +164,30 @@ async function syncTransactionsSubTask(
                 error
               );
             } else {
-              console.log(
+              await uniqueLog(
+                io,
+                "info",
                 `Successfully upserted ${batch?.length || 0} transactions for account ${account.id}`
               );
             }
             return batch;
           }
         );
-        console.log(
+        await uniqueLog(
+          io,
+          "info",
           `Finished processing all batches for account ${account.id}`
         );
       });
 
       if (promises) {
-        console.log("Waiting for all account processing to complete");
+        await uniqueLog(
+          io,
+          "info", "Waiting for all account processing to complete");
         await Promise.all(promises);
-        console.log("All accounts processed successfully");
+        await uniqueLog(
+          io,
+          "info", "All accounts processed successfully");
       }
 
       // TODO: based on the sync event call the backend and sync the transactions for the backend

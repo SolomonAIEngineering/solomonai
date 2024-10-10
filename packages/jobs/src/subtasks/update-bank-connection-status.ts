@@ -2,6 +2,7 @@ import { ConnectionStatus, Database } from "@midday/supabase/types";
 import { IOWithIntegrations } from "@trigger.dev/sdk";
 import { Supabase } from "@trigger.dev/supabase";
 import { BankAccountWithConnection } from "../types/bank-account-with-connection";
+import { uniqueLog } from "../utils/log";
 
 /**
  * Updates the status of a bank connection in the database.
@@ -39,7 +40,9 @@ async function updateBankConnectionStatus(
   const data = await io.runTask(
     `${taskKeyPrefix}-update-bank-connection-status-${Date.now()}-${connectionId}`,
     async () => {
-      console.log("Updating bank connection status");
+      await uniqueLog(
+        io,
+        "info", "Updating bank connection status");
       const { data: accountsData } = await io.supabase.client
         .from("bank_connections")
         .update({

@@ -3,6 +3,7 @@ import { IOWithIntegrations } from "@trigger.dev/sdk";
 import { Supabase } from "@trigger.dev/supabase";
 import { BankAccountWithConnection } from "../types/bank-account-with-connection";
 import { engine } from "../utils/engine";
+import { uniqueLog } from "../utils/log";
 
 async function updateBankAccountBalance(
     io: IOWithIntegrations<{
@@ -11,7 +12,9 @@ async function updateBankAccountBalance(
     account: BankAccountWithConnection,
     taskKeyPrefix: string
 ): Promise<null> {
-    console.log("Starting manual sync job");
+    await uniqueLog(
+        io,
+        "info", "Starting manual sync job");
     const supabase = io.supabase.client;
 
     const data = await io.runTask(
@@ -28,7 +31,9 @@ async function updateBankAccountBalance(
                     .from("bank_accounts")
                     .update({ balance: balance.data.amount })
                     .eq("id", account.id);
-                console.log(`Updated balance for account ID: ${account.id}`);
+                await uniqueLog(
+                    io,
+                    "info", `Updated balance for account ID: ${account.id}`);
             }
         },
         { name: "Updating bank account balance" }
