@@ -8,7 +8,7 @@ import { Events, Jobs } from "../constants";
 import { engine } from "../utils/engine";
 import { parseAPIError } from "../utils/error";
 import { processBatch } from "../utils/process";
-import { getClassification, transformTransaction, FinancialEngineAccountType } from "../utils/transform";
+import { getClassification, transformTransaction } from "../utils/transform";
 
 const BATCH_LIMIT = 500;
 
@@ -86,7 +86,7 @@ client.defineJob({
       const transactions = await engine.transactions.list({
         provider: account.bank_connection.provider,
         accountId: account.account_id,
-        accountType: accountType,
+        accountType: accountType as "depository" | "credit" | "other_asset" | "loan" | "other_liability" | undefined,
         accessToken: account.bank_connection?.access_token,
         latest: "true",
       });
@@ -127,7 +127,7 @@ client.defineJob({
         console.log(
           `Processed batch of ${batch.length} transactions for account ${account.id}`,
         );
-        await supabase.from("transactions").upsert(batch, {
+        await supabase.from("transactions").upsert(batch as any, {
           onConflict: "internal_id",
           ignoreDuplicates: true,
         });
