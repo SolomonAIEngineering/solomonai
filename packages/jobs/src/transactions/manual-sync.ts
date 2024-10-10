@@ -64,6 +64,7 @@ client.defineJob({
     );
 
     // Fetch enabled bank accounts
+    console.log("Fetching enabled bank accounts");
     const { data: accountsData } = await supabase
       .from("bank_accounts")
       .select(
@@ -74,15 +75,17 @@ client.defineJob({
       .eq("enabled", true)
       .returns<BankAccountWithConnection[]>();
 
-
     console.log(`Found ${accountsData?.length || 0} enabled bank accounts`);
 
     const promises = accountsData?.map(async (account) => {
       console.log(`Processing account: ${account.id}`);
+      console.log(`Account type: ${account.type}`);
 
       const accountType = getClassification(account.type);
+      console.log(`Classified account type: ${accountType}`);
 
       // Fetch transactions for the account
+      console.log(`Fetching transactions for account ${account.id}`);
       const transactions = await engine.transactions.list({
         provider: account.bank_connection.provider,
         accountId: account.account_id,
@@ -95,6 +98,7 @@ client.defineJob({
       );
 
       // Transform transactions
+      console.log(`Transforming transactions for account ${account.id}`);
       const formattedTransactions = transactions.data?.map((transaction) => {
         return transformTransaction({
           transaction,
@@ -102,8 +106,10 @@ client.defineJob({
           bankAccountId: account.id,
         });
       });
+      console.log(`Transformed ${formattedTransactions?.length || 0} transactions`);
 
       // Fetch and update account balance
+      console.log(`Fetching balance for account ${account.id}`);
       const balance = await engine.accounts.balance({
         provider: account.bank_connection.provider,
         id: account.account_id,
@@ -114,26 +120,34 @@ client.defineJob({
       );
 
       if (balance.data?.amount) {
+        console.log(`Updating balance for account ${account.id}`);
         await supabase
           .from("bank_accounts")
           .update({
             balance: balance.data.amount,
           })
           .eq("id", account.id);
+        console.log(`Balance updated for account ${account.id}`);
       }
 
       // Process transactions in batches
+      console.log(`Processing transactions in batches for account ${account.id}`);
       await processBatch(formattedTransactions, BATCH_LIMIT, async (batch) => {
         console.log(
-          `Processed batch of ${batch.length} transactions for account ${account.id}`,
+          `Processing batch of ${batch.length} transactions for account ${account.id}`,
         );
-        await supabase.from("transactions").upsert(batch as any, {
+        const { data, error } = await supabase.from("transactions").upsert(batch as any, {
           onConflict: "internal_id",
           ignoreDuplicates: true,
         });
-
+        if (error) {
+          console.error(`Error upserting transactions for account ${account.id}:`, error);
+        } else {
+          console.log(`Successfully upserted ${batch?.length || 0} transactions for account ${account.id}`);
+        }
         return batch;
       });
+      console.log(`Finished processing all batches for account ${account.id}`);
     });
 
     try {
@@ -146,6 +160,7 @@ client.defineJob({
       console.error("Error occurred during processing:", error);
       if (error instanceof FinancialEngine.APIError) {
         const parsedError = parseAPIError(error);
+        console.log("Parsed API error:", parsedError);
 
         // Function to check if a status is allowed
         const isAllowedStatus = (status: string): status is ConnectionStatus => {
@@ -155,6 +170,7 @@ client.defineJob({
         // Determine the status to use
         const status: ConnectionStatus = isAllowedStatus(parsedError.code) ? parsedError.code : "unknown";
 
+        console.log(`Updating bank connection status to ${status}`);
         await io.supabase.client
           .from("bank_connections")
           .update({
@@ -162,13 +178,14 @@ client.defineJob({
             error_details: parsedError.message,
           })
           .eq("id", connectionId);
+        console.log("Bank connection status updated due to error");
       }
 
       throw new Error(error instanceof Error ? error.message : String(error));
     }
 
     // Update bank connection status
-    console.log("Updating bank connection status");
+    console.log("Updating bank connection status to 'connected'");
     await io.supabase.client
       .from("bank_connections")
       .update({
@@ -177,16 +194,24 @@ client.defineJob({
         error_details: null,
       })
       .eq("id", connectionId);
+    console.log("Bank connection status updated successfully");
 
     // Revalidate data tags
     console.log("Revalidating tags");
-    revalidateTag(`bank_connections_${teamId}`);
-    revalidateTag(`transactions_${teamId}`);
-    revalidateTag(`spending_${teamId}`);
-    revalidateTag(`metrics_${teamId}`);
-    revalidateTag(`bank_accounts_${teamId}`);
-    revalidateTag(`insights_${teamId}`);
-    revalidateTag(`expenses_${teamId}`);
+    const tagsToRevalidate = [
+      `bank_connections_${teamId}`,
+      `transactions_${teamId}`,
+      `spending_${teamId}`,
+      `metrics_${teamId}`,
+      `bank_accounts_${teamId}`,
+      `insights_${teamId}`,
+      `expenses_${teamId}`,
+    ];
+    tagsToRevalidate.forEach(tag => {
+      console.log(`Revalidating tag: ${tag}`);
+      revalidateTag(tag);
+    });
+    console.log("All tags revalidated");
 
     console.log("Manual sync job completed successfully");
   },
