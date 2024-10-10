@@ -155,6 +155,8 @@ async function syncTransactionsSubTask(
         console.log("All accounts processed successfully");
       }
 
+      // TODO: based on the sync event call the backend and sync the transactions for the backend
+
       return {
         success: true,
       };

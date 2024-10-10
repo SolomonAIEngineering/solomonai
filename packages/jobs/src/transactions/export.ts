@@ -114,9 +114,9 @@ client.defineJob({
                 ? `${rowId}_${idx2}.${extension}`
                 : `${rowId}.${extension}`;
 
-            const { data } = await download(client, {
+            const { data } = await download(client as any, {
               bucket: "vault",
-              path: attachment.path.join("/"),
+              path: attachment?.path?.join("/") ?? "",
             });
 
             return {
@@ -214,9 +214,8 @@ client.defineJob({
     const zipWriter = new ZipWriter(zipFileWriter);
 
     zipWriter.add("transactions.csv", new TextReader(csv));
-
-    attachments?.map((attachment) => {
-      if (attachment?.value?.blob) {
+    attachments?.forEach((attachment) => {
+      if (attachment.status === 'fulfilled' && attachment.value?.blob) {
         zipWriter.add(
           attachment.value.name,
           new BlobReader(attachment.value.blob)
