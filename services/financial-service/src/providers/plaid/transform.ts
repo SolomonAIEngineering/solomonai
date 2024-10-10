@@ -290,7 +290,7 @@ export const transformTransaction = ({
   transaction,
 }: TransformTransactionPayload): BaseTransaction => {
   const method = mapTransactionMethod(transaction?.transaction_code);
-  const amount = formatAmout(transaction.amount);
+  const amount = transformToSignedAmount(transaction.amount);
   const description = transformDescription(transaction) ?? null;
   const name = capitalCase(transaction.name);
 
