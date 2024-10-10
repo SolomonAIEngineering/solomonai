@@ -1,3 +1,4 @@
+import { AccountType, BankProviders, ConnectionStatus } from "@midday/supabase/types";
 import FinancialEngine from "@solomon-ai/financial-engine-sdk";
 import { eventTrigger } from "@trigger.dev/sdk";
 import { revalidateTag } from "next/cache";
@@ -7,9 +8,21 @@ import { Events, Jobs } from "../constants";
 import { engine } from "../utils/engine";
 import { parseAPIError } from "../utils/error";
 import { processBatch } from "../utils/process";
-import { getClassification, transformTransaction } from "../utils/transform";
+import { getClassification, transformTransaction, FinancialEngineAccountType } from "../utils/transform";
 
 const BATCH_LIMIT = 500;
+
+ type BankAccountWithConnection = {
+  id: string;
+  team_id: string;
+  account_id: string;
+  type: AccountType;
+  bank_connection: {
+    id: string;
+    provider: BankProviders;
+    access_token: string;
+  };
+};
 
 client.defineJob({
   id: Jobs.TRANSACTIONS_MANUAL_SYNC,
@@ -58,23 +71,27 @@ client.defineJob({
       )
       .eq("bank_connection_id", connectionId)
       .eq("team_id", teamId)
-      .eq("enabled", true);
+      .eq("enabled", true)
+      .returns<BankAccountWithConnection[]>();
+
 
     console.log(`Found ${accountsData?.length || 0} enabled bank accounts`);
 
     const promises = accountsData?.map(async (account) => {
       console.log(`Processing account: ${account.id}`);
 
+      const accountType = getClassification(account.type);
+
       // Fetch transactions for the account
       const transactions = await engine.transactions.list({
         provider: account.bank_connection.provider,
         accountId: account.account_id,
-        accountType: getClassification(account.type),
+        accountType: accountType,
         accessToken: account.bank_connection?.access_token,
         latest: "true",
       });
       console.log(
-        `Retrieved ${transactions.data?.length || 0} transactions for account ${account.id}`,
+        `Retrieved ${transactions.data?.length || 0} transactions for account ${account.id} (Type: ${accountType})`
       );
 
       // Transform transactions
@@ -130,10 +147,18 @@ client.defineJob({
       if (error instanceof FinancialEngine.APIError) {
         const parsedError = parseAPIError(error);
 
+        // Function to check if a status is allowed
+        const isAllowedStatus = (status: string): status is ConnectionStatus => {
+          return ["disconnected", "connected", "unknown"].includes(status) || status === null || status === undefined;
+        };
+
+        // Determine the status to use
+        const status: ConnectionStatus = isAllowedStatus(parsedError.code) ? parsedError.code : "unknown";
+
         await io.supabase.client
           .from("bank_connections")
           .update({
-            status: parsedError.code,
+            status: status,
             error_details: parsedError.message,
           })
           .eq("id", connectionId);
