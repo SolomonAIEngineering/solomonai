@@ -7,13 +7,37 @@ import { engine } from "../utils/engine";
 import { processBatch } from "../utils/process";
 import { getClassification, transformTransaction } from "../utils/transform";
 
+/**
+ * Synchronizes transactions for multiple bank accounts.
+ *
+ * This function performs the following operations for each bank account:
+ * 1. Fetches transactions from the banking provider
+ * 2. Transforms the transactions into a format suitable for storage
+ * 3. Fetches and updates the account balance
+ * 4. Upserts the transformed transactions into the database
+ *
+ * @param io - An object containing integration clients, including Supabase
+ * @param accountsData - An array of bank accounts with their connection details
+ * @param taskKeyPrefix - A prefix used to generate unique task keys
+ *
+ * @returns A promise that resolves to an object indicating the success of the operation
+ *
+ * @throws Will throw an error if there are issues with fetching transactions,
+ *         updating account balances, or upserting transactions
+ *
+ * @example
+ * const result = await syncTransactionsSubTask(io, accountsData, 'daily');
+ * if (result.success) {
+ *   console.log('Transactions synchronized successfully');
+ * }
+ */
 async function syncTransactionsSubTask(
   io: IOWithIntegrations<{
     supabase: Supabase<Database, "public", any>;
   }>,
   accountsData: Array<BankAccountWithConnection> | null,
   taskKeyPrefix: string
-) {
+): Promise<{ success: boolean }> {
   const supabase = io.supabase.client;
 
   const response = await io.runTask(

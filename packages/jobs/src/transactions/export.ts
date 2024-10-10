@@ -73,7 +73,7 @@ client.defineJob({
         category:transaction_categories(id, name, description),
         bank_account:bank_accounts(id, name)
       `,
-        { count: "exact" },
+        { count: "exact" }
       )
       .in("id", transactionIds)
       .eq("team_id", teamId);
@@ -124,9 +124,9 @@ client.defineJob({
               name,
               blob: data,
             };
-          },
+          }
         );
-      }),
+      })
     );
 
     await generateExport.update("generate-export-attachments-end", {
@@ -148,7 +148,7 @@ client.defineJob({
      * @type {Array<Array<string|null>>}
      */
     const rows = data
-      ?.sort((a, b) => a.date - b.date)
+      ?.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .map((transaction, idx) => [
         transaction?.id,
         transaction.date,
@@ -174,9 +174,9 @@ client.defineJob({
 
     /**
      * Generates CSV content from the formatted rows.
-     * @type {string}
+     * @type {Promise<string>}
      */
-    const csv = await writeToString(rows, {
+    const csv = await writeToString(rows ?? [], {
       headers: [
         "ID",
         "Date",
@@ -219,7 +219,7 @@ client.defineJob({
       if (attachment?.value?.blob) {
         zipWriter.add(
           attachment.value.name,
-          new BlobReader(attachment.value.blob),
+          new BlobReader(attachment.value.blob)
         );
       }
     });

@@ -1,7 +1,11 @@
+import { ConnectionStatus } from "@midday/supabase/types";
 import FinancialEngine from "@solomon-ai/financial-engine-sdk";
 import { revalidateTag } from "next/cache";
 import { client, supabase } from "../client";
 import { Events, Jobs } from "../constants";
+import { fetchEnabledBankAccountsForTeamSubTask } from "../subtasks/fetch-enabled-bank-account";
+import { syncTransactionsSubTask } from "../subtasks/sync-transactions";
+import { updateBankConnectionStatus } from "../subtasks/update-bank-connection-status";
 import { engine } from "../utils/engine";
 import { parseAPIError } from "../utils/error";
 import { getClassification, transformTransaction } from "../utils/transform";
@@ -35,22 +39,16 @@ client.defineJob({
     const supabase = io.supabase.client;
     const teamId = ctx.source?.id as string;
     console.log(`Processing for team ID: ${teamId}`);
+    const prefix = `team-txn-sync-${teamId}-${Date.now()}`;
 
     // 1. Fetch enabled bank accounts for the team
     console.log("Fetching enabled bank accounts");
-    const { data: accountsData, error: accountsError } = await supabase
-      .from("bank_accounts")
-      .select(
-        "id, team_id, account_id, type, bank_connection:bank_connection_id(id, provider, access_token)"
-      )
-      .eq("team_id", teamId)
-      .eq("enabled", true)
-      .eq("manual", false);
-
-    if (accountsError) {
-      console.error("Error fetching accounts:", accountsError);
-      await io.logger.error("Accounts Error", accountsError);
-    }
+    const accountsData = await fetchEnabledBankAccountsForTeamSubTask(
+      io,
+      teamId,
+      "transactions-sync",
+      { excludeManual: true }
+    );
 
     console.log(`Found ${accountsData?.length || 0} enabled bank accounts`);
 

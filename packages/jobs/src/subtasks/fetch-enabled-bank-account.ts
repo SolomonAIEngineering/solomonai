@@ -63,4 +63,52 @@ async function fetchEnabledBankAccountsSubTask(
   return data;
 }
 
-export { fetchEnabledBankAccountsSubTask };
+async function fetchEnabledBankAccountsForTeamSubTask(
+  io: IOWithIntegrations<{
+    supabase: Supabase<Database, "public", any>;
+  }>,
+  teamId: string,
+  taskKeyPrefix: string,
+  options: { excludeManual?: boolean } = {}
+): Promise<BankAccountWithConnection[] | null> {
+  const supabase = io.supabase.client;
+
+  const data = await io.runTask(
+    `${taskKeyPrefix}-fetch-enabled-bank-accounts`,
+    async () => {
+      console.log("Fetching enabled bank accounts");
+      let query = supabase
+        .from("bank_accounts")
+        .select(
+          "id, team_id, account_id, type, bank_connection:bank_connection_id(id, provider, access_token)"
+        )
+        .eq("team_id", teamId)
+        .eq("enabled", true);
+
+      if (options.excludeManual) {
+        query = query.eq("manual", false);
+      }
+
+      const { data: accountsData, error: accountsError } =
+        await query.returns<BankAccountWithConnection[]>();
+
+      if (accountsError) {
+        console.error("Error fetching accounts:", accountsError);
+        await io.logger.error("Accounts Error", accountsError);
+
+        return null;
+      }
+
+      console.log(`Found ${accountsData?.length || 0} enabled bank accounts`);
+      return accountsData;
+    },
+    { name: "Fetching enabled bank accounts" }
+  );
+
+  return data;
+}
+
+export {
+  fetchEnabledBankAccountsForTeamSubTask,
+  fetchEnabledBankAccountsSubTask,
+};
