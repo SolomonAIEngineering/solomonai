@@ -81,7 +81,7 @@ client.defineJob({
         const parsedError = parseAPIError(error);
         await uniqueLog(
           io,
-          "info", 
+          "error", 
           "Parsed API error:", parsedError);
 
         // Function to check if a status is allowed
