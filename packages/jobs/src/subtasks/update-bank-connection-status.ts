@@ -37,7 +37,7 @@ async function updateBankConnectionStatus(
   const supabase = io.supabase.client;
 
   const data = await io.runTask(
-    `${taskKeyPrefix}-update-bank-connection-status`,
+    `${taskKeyPrefix}-update-bank-connection-status-${Date.now()}-${connectionId}`,
     async () => {
       console.log("Updating bank connection status");
       const { data: accountsData } = await io.supabase.client

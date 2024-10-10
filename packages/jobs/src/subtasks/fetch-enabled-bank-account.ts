@@ -110,5 +110,5 @@ async function fetchEnabledBankAccountsForTeamSubTask(
 
 export {
   fetchEnabledBankAccountsForTeamSubTask,
-  fetchEnabledBankAccountsSubTask,
+  fetchEnabledBankAccountsSubTask
 };

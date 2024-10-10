@@ -6,6 +6,7 @@ import { BankAccountWithConnection } from "../types/bank-account-with-connection
 import { engine } from "../utils/engine";
 import { processBatch } from "../utils/process";
 import { getClassification, transformTransaction } from "../utils/transform";
+import { updateBankConnectionStatus } from "./update-bank-connection-status";
 
 /**
  * Synchronizes transactions for multiple bank accounts.
@@ -102,6 +103,15 @@ async function syncTransactionsSubTask(
             })
             .eq("id", account.id);
           console.log(`Balance updated for account ${account.id}`);
+
+          // Update bank connection status to connected
+          await updateBankConnectionStatus(
+            io,
+            account.bank_connection ?.id,
+            "connected",
+            taskKeyPrefix,
+            null
+          );
         }
 
         // Process transactions in batches

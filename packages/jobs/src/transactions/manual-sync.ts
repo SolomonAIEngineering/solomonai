@@ -58,14 +58,14 @@ client.defineJob({
       io,
       teamId,
       connectionId,
-      prefix
+      `${prefix}-fetch-enabled-bank-accounts`
     );
 
     console.log(`Found ${accountsData?.length || 0} enabled bank accounts`);
 
     try {
       // execute the sync transactions subtask for the accounts enabled for the team
-      await syncTransactionsSubTask(io, accountsData, prefix);
+      await syncTransactionsSubTask(io, accountsData, `${prefix}-sync-transactions`);
     } catch (error) {
       console.error("Error occurred during processing:", error);
       if (error instanceof FinancialEngine.APIError) {

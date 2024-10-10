@@ -108,7 +108,7 @@ client.defineJob({
            * @returns {Promise<Attachment>} A promise that resolves to the processed attachment.
            */
           async (attachment, idx2: number) => {
-            const extension = attachment.name.split(".").pop();
+            const extension = attachment.name?.split(".").pop() ?? "";
             const name =
               idx2 > 0
                 ? `${rowId}_${idx2}.${extension}`
@@ -126,7 +126,7 @@ client.defineJob({
             };
           }
         );
-      })
+      }) ?? []
     );
 
     await generateExport.update("generate-export-attachments-end", {
