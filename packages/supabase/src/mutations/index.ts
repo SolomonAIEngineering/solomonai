@@ -531,7 +531,7 @@ export async function createProject(
     .single();
 }
 
-type InsertRecurringTransactionsParams = {
+export type InsertRecurringTransactionsParams = {
   inflow: RecurringTransactionsForInsert[];
   outflow: RecurringTransactionsForInsert[];
 };
