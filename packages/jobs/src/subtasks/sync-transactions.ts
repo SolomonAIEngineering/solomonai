@@ -64,7 +64,7 @@ async function syncTransactionsSubTask(
     return transactions.data || [];
   }
 
-  async function transformTransactions(transactions: any[], account: BankAccountWithConnection) {
+  async function transformTransactions(transactions: EngineTransaction.Data[], account: BankAccountWithConnection) {
     await uniqueLog(io, "info", `Transforming transactions for account ${account.id}`);
     const formattedTransactions = transactions.map((transaction) =>
       transformTransaction({

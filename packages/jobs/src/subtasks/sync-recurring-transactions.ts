@@ -1,7 +1,7 @@
 import { InsertRecurringTransactionsParams } from "@midday/supabase/mutations";
 import { Database, RecurringTransactionsForInsert } from "@midday/supabase/types";
 import { RequestOptions } from "@solomon-ai/financial-engine-sdk/core.mjs";
-import type { TransactionsSchema as EngineTransaction, TransactionRecurringParams } from "@solomon-ai/financial-engine-sdk/resources/transactions";
+import type { TransactionsSchema as EngineTransaction, TransactionRecurringParams, TransactionRecurringResponse } from "@solomon-ai/financial-engine-sdk/resources/transactions";
 import { IOWithIntegrations } from "@trigger.dev/sdk";
 import { Supabase } from "@trigger.dev/supabase";
 import { BankAccountWithConnection } from "../types/bank-account-with-connection";
@@ -64,7 +64,7 @@ async function syncRecurringTransactionsSubTask(
         return await engine.transactions.recurring(params, requestOptions);
     }
 
-    async function upsertTransactions(account: BankAccountWithConnection, transactions: any) {
+    async function upsertTransactions(account: BankAccountWithConnection, transactions: TransactionRecurringResponse) {
         const inflow = transformTransactions(transactions.inflow, account.id);
         const outflow = transformTransactions(transactions.outflow, account.id);
 
@@ -78,7 +78,7 @@ async function syncRecurringTransactionsSubTask(
         await uniqueLog(io, "info", `Recurring transactions upserted successfully for account ${account.id}`);
     }
 
-    function transformTransactions(transactions: any[], accountId: string): Array<RecurringTransactionsForInsert> {
+    function transformTransactions(transactions: (TransactionRecurringResponse.Inflow | TransactionRecurringResponse.Outflow)[], accountId: string): Array<RecurringTransactionsForInsert> {
         return transactions.map(transaction => ({
             account_id: accountId,
             average_amount: transaction.average_amount.amount,
@@ -98,7 +98,7 @@ async function syncRecurringTransactionsSubTask(
             last_user_modified_datetime: transaction.last_user_modified_datetime,
             merchant_name: transaction.merchant_name,
             status: transaction.status,
-            stream_id: transaction.recurring_transaction_id,
+            stream_id: transaction.stream_id,
             transaction_ids: transaction.transaction_ids,
         }));
     }
