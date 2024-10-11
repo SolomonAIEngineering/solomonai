@@ -35,8 +35,7 @@ client.defineJob({
             io,
             "info", "Starting TRANSACTIONS_SYNC job");
         const supabase = io.supabase.client;
-        // const teamId = ctx.source?.id as string;
-        const teamId = "78d00d84-0946-49a7-a54e-06e1ae94e4e4"
+        const teamId = ctx.source?.id as string;
         await uniqueLog(
             io,
             "info", `Processing for team ID: ${teamId}`);

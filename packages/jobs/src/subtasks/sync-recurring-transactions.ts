@@ -37,8 +37,21 @@ async function syncRecurringTransactionsSubTask(
 
     async function processAccount(account: BankAccountWithConnection) {
         await logAccountInfo(account);
-        const transactions = await fetchTransactions(account);
-        await upsertTransactions(account, transactions);
+
+        const transactions = await fetchTransactions(account) as unknown as {
+            data: {
+                inflow: Array<TransactionRecurringResponse.Inflow>,
+                outflow: Array<TransactionRecurringResponse.Outflow>,
+            }
+        };
+
+
+        const {
+            inflow: inflowTransactions,
+            outflow: outflowTransactions,
+        } = transactions.data;
+
+        await upsertTransactions(account, inflowTransactions, outflowTransactions);
         await updateAccountBalance(account);
     }
 
@@ -49,7 +62,7 @@ async function syncRecurringTransactionsSubTask(
         await uniqueLog(io, "info", `Classified account type: ${accountType}`);
     }
 
-    async function fetchTransactions(account: BankAccountWithConnection) {
+    async function fetchTransactions(account: BankAccountWithConnection): Promise<TransactionRecurringResponse> {
         await uniqueLog(io, "info", `Fetching transactions for account ${account.id}`);
         const params: TransactionRecurringParams = {
             accountId: account.account_id,
@@ -64,13 +77,19 @@ async function syncRecurringTransactionsSubTask(
         return await engine.transactions.recurring(params, requestOptions);
     }
 
-    async function upsertTransactions(account: BankAccountWithConnection, transactions: TransactionRecurringResponse) {
-        const inflow = transformTransactions(transactions.inflow, account.id);
-        const outflow = transformTransactions(transactions.outflow, account.id);
+    async function upsertTransactions(account: BankAccountWithConnection, 
+        inflow: Array<TransactionRecurringResponse.Inflow>,
+        outflow: Array<TransactionRecurringResponse.Outflow>) {
 
-        await uniqueLog(io, "info", `Retrieved ${inflow.length} inflow and ${outflow.length} outflow transactions for account ${account.id}`);
+        let tinflow, toutflow: RecurringTransactionsForInsert[] = [];
+        if (inflow) {
+            tinflow = transformTransactions(inflow, account.id);
+        }
+        if (outflow) {
+            toutflow = transformTransactions(outflow, account.id);
+        }
 
-        const { error } = await supabase.rpc("insert_recurring_transactions", { p_data: { inflow, outflow } });
+        const { error } = await supabase.rpc("insert_recurring_transactions", { p_data: { inflow: tinflow, outflow: toutflow } });
         if (error) {
             throw new Error(`Failed to upsert recurring transactions: ${error.message}`);
         }
