@@ -14,6 +14,9 @@ type ReportSchema = Tables<"reports">;
 type SubscriptionSchema = Tables<"subscriptions">;
 type PriceSchema = Tables<"prices">;
 type ProductSchema = Tables<"products">;
+type RecurringTransactionSchema = Tables<"recurring_transactions">;
+type ReportsSchema = Tables<"reports">;
+type PersonalFinanceCategorySchema = Tables<"personal_finance_categories">;
 
 // Union types from the database schema
 type AccountType = Database["public"]["Enums"]["account_type"];
@@ -39,23 +42,31 @@ type UserTier = Database["public"]["Enums"]["user_tier"];
 type UserWithTeam = UserSchema & { team: TeamSchema };
 type UserWithTeams = UserSchema & { teams: TeamSchema[] };
 type BankAccountWithTeam = BankAccountSchema & { team: TeamSchema };
-type BankAccountWithBankConnection = BankAccountSchema & { bank_connection: BankConnectionSchema };
+type BankAccountWithBankConnection = BankAccountSchema & {
+  bank_connection: BankConnectionSchema;
+};
 
 export type {
   // Union types
   AccountType,
-  BankAccountSchema, BankAccountWithTeam, BankConnectionSchema,
+  BankAccountSchema,
+  BankAccountWithBankConnection,
+  BankAccountWithTeam,
+  BankConnectionSchema,
   BankProviders,
   ConnectionStatus,
   DocumentSchema,
   InboxSchema,
   InboxStatus,
   InboxType,
+  PersonalFinanceCategorySchema,
   PriceSchema,
   PricingPlanInterval,
   PricingType,
   ProductSchema,
+  RecurringTransactionSchema,
   ReportSchema,
+  ReportsSchema,
   ReportTypes,
   SubscriptionSchema,
   SubscriptionStatus,
@@ -73,6 +84,4 @@ export type {
   UserSchema,
   UserTier,
   UserWithTeam,
-  BankAccountWithBankConnection
 };
-
