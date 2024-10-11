@@ -69,7 +69,7 @@ export function BankAccountSheet({
   if (isDesktop) {
     return (
         <Dialog open={isOpen} onOpenChange={setOpen}>
-          <DialogContent className="md:min-w-[90%] md:min-h-[75%] overflow-y-auto scrollbar-hide">
+          <DialogContent className="md:min-w-[80%] md:min-h-[80%] md:max-h-[85%] overflow-y-auto scrollbar-hide">
             {content}
           </DialogContent>
         </Dialog>
