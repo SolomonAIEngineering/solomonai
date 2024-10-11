@@ -1,7 +1,9 @@
 import { getAccessValidForDays } from "@midday/engine/src/providers/gocardless/utils";
 import { addDays } from "date-fns";
 import { getCurrentUserTeamQuery, getUserInviteQuery } from "../queries";
-import type { Client } from "../types";
+import type { Client, RecurringTransactionsForInsert } from "../types";
+import { Database } from "../types/db";
+import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
 
 type CreateBankAccountsPayload = {
   accounts: {
@@ -34,7 +36,7 @@ export async function createBankAccounts(
     teamId,
     userId,
     provider,
-  }: CreateBankAccountsPayload,
+  }: CreateBankAccountsPayload
 ) {
   // Get first account to create a bank connection
   const account = accounts?.at(0);
@@ -48,7 +50,7 @@ export async function createBankAccounts(
     provider === "gocardless"
       ? addDays(
           new Date(),
-          getAccessValidForDays({ institutionId: account.institution_id }),
+          getAccessValidForDays({ institutionId: account.institution_id })
         ).toDateString()
       : undefined;
 
@@ -68,7 +70,7 @@ export async function createBankAccounts(
       },
       {
         onConflict: "institution_id, team_id",
-      },
+      }
     )
     .select()
     .single();
@@ -90,8 +92,8 @@ export async function createBankAccounts(
         }),
         {
           onConflict: "account_id",
-        },
-      ),
+        }
+      )
     )
     .select();
 }
@@ -104,7 +106,7 @@ type UpdateBankConnectionData = {
 // NOTE: Only GoCardLess needs to be updated
 export async function updateBankConnection(
   supabase: Client,
-  data: UpdateBankConnectionData,
+  data: UpdateBankConnectionData
 ) {
   const { id, referenceId } = data;
 
@@ -113,7 +115,7 @@ export async function updateBankConnection(
     .update({
       expires_at: addDays(
         new Date(),
-        getAccessValidForDays({ institutionId: id }),
+        getAccessValidForDays({ institutionId: id })
       ).toDateString(),
       reference_id: referenceId,
     })
@@ -129,7 +131,7 @@ type CreateTransactionsData = {
 
 export async function createTransactions(
   supabase: Client,
-  data: CreateTransactionsData,
+  data: CreateTransactionsData
 ) {
   const { transactions, teamId } = data;
 
@@ -137,14 +139,14 @@ export async function createTransactions(
     transactions.map((transaction) => ({
       ...transaction,
       team_id: teamId,
-    })),
+    }))
   );
 }
 
 export async function updateTransaction(
   supabase: Client,
   id: string,
-  data: any,
+  data: any
 ) {
   return supabase
     .from("transactions")
@@ -208,7 +210,7 @@ type UpdateUserTeamRoleParams = {
 
 export async function updateUserTeamRole(
   supabase: Client,
-  params: UpdateUserTeamRoleParams,
+  params: UpdateUserTeamRoleParams
 ) {
   const { role, userId, teamId } = params;
 
@@ -234,7 +236,7 @@ type DeleteTeamMemberParams = {
 
 export async function deleteTeamMember(
   supabase: Client,
-  params: DeleteTeamMemberParams,
+  params: DeleteTeamMemberParams
 ) {
   return supabase
     .from("users_on_team")
@@ -263,7 +265,7 @@ type UpdateBankAccountParams = {
 
 export async function updateBankAccount(
   supabase: Client,
-  params: UpdateBankAccountParams,
+  params: UpdateBankAccountParams
 ) {
   const { id, teamId, ...data } = params;
 
@@ -283,7 +285,7 @@ type UpdateSimilarTransactionsCategoryParams = {
 
 export async function updateSimilarTransactionsCategory(
   supabase: Client,
-  params: UpdateSimilarTransactionsCategoryParams,
+  params: UpdateSimilarTransactionsCategoryParams
 ) {
   const { id, team_id } = params;
 
@@ -312,7 +314,7 @@ type UpdateSimilarTransactionsRecurringParams = {
 
 export async function updateSimilarTransactionsRecurring(
   supabase: Client,
-  params: UpdateSimilarTransactionsRecurringParams,
+  params: UpdateSimilarTransactionsRecurringParams
 ) {
   const { id, team_id } = params;
 
@@ -343,7 +345,7 @@ export type Attachment = {
 
 export async function createAttachments(
   supabase: Client,
-  attachments: Attachment[],
+  attachments: Attachment[]
 ) {
   const { data: userData } = await getCurrentUserTeamQuery(supabase);
 
@@ -353,7 +355,7 @@ export async function createAttachments(
       attachments.map((attachment) => ({
         ...attachment,
         team_id: userData?.team_id,
-      })),
+      }))
     )
     .select();
 
@@ -458,7 +460,7 @@ type UpdateInboxByIdParams = {
 
 export async function updateInboxById(
   supabase: Client,
-  params: UpdateInboxByIdParams,
+  params: UpdateInboxByIdParams
 ) {
   const { id, teamId, ...data } = params;
 
@@ -516,7 +518,7 @@ type CreateProjectParams = {
 
 export async function createProject(
   supabase: Client,
-  params: CreateProjectParams,
+  params: CreateProjectParams
 ) {
   const { data: userData } = await getCurrentUserTeamQuery(supabase);
 
@@ -528,4 +530,153 @@ export async function createProject(
     })
     .select()
     .single();
+}
+
+type InsertRecurringTransactionsParams = {
+  inflow: RecurringTransactionsForInsert[];
+  outflow: RecurringTransactionsForInsert[];
+};
+
+/**
+ * Inserts recurring transactions into the database.
+ *
+ * @param supabase - The Supabase client instance.
+ * @param params - An object containing inflow and outflow recurring transactions.
+ * @param params.inflow - An array of recurring inflow transactions to be inserted.
+ * @param params.outflow - An array of recurring outflow transactions to be inserted.
+ *
+ * @returns A Promise that resolves to the result of the insertion operation.
+ *
+ * @throws Will throw an error if the insertion operation fails.
+ *
+ * @example
+ * const result = await insertRecurringTransactions(supabase, {
+ *   inflow: [{ amount: 1000, description: 'Salary', frequency: 'monthly' }],
+ *   outflow: [{ amount: 500, description: 'Rent', frequency: 'monthly' }]
+ * });
+ *
+ * @remarks
+ * This function uses a custom RPC (Remote Procedure Call) named 'insert_recurring_transactions'
+ * to perform the insertion. The RPC is expected to handle the logic for inserting both inflow
+ * and outflow transactions in a single operation.
+ */
+export async function insertRecurringTransactions(
+  supabase: Client,
+  params: InsertRecurringTransactionsParams
+): Promise<{
+  success: boolean;
+}> {
+  const { inflow, outflow } = params;
+
+  const { error } = await supabase.rpc("insert_recurring_transactions", {
+    p_data: { inflow, outflow },
+  });
+
+  if (error) {
+    throw new Error(`Error inserting recurring transactions: ${error.message}`);
+  }
+
+  return {
+    success: true,
+  };
+}
+
+/**
+ * Retrieves all associated transaction IDs for a given recurring transaction ID.
+ *
+ * @param supabase - The Supabase client instance.
+ * @param recurringTransactionId - The UUID of the recurring transaction.
+ *
+ * @returns A Promise that resolves to an array of transaction IDs.
+ *
+ * @throws Will throw an error if the retrieval operation fails.
+ *
+ * @example
+ * const transactionIds = await getAssociatedTransactions(supabase, '123e4567-e89b-12d3-a456-426614174000');
+ */
+export async function getAssociatedTransactions(
+  supabase: Client,
+  recurringTransactionId: string
+): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("transaction_ids")
+    .select("transaction_id")
+    .eq("recurring_transaction_id", recurringTransactionId);
+
+  if (error) {
+    throw new Error(
+      `Error retrieving associated transactions: ${error.message}`
+    );
+  }
+
+  return data?.map((item) => item.transaction_id) || [];
+}
+
+// Add this type and function to your mutations file
+
+type RecurringTransaction =
+  Database["public"]["Tables"]["recurring_transactions"]["Row"];
+
+type GetRecurringTransactionsParams = {
+  streamId?: string;
+  accountId?: string;
+  merchantName?: string;
+  startDate?: string;
+  lastTransactionDate?: string;
+  limit?: number;
+  offset?: number;
+};
+
+export async function getRecurringTransactions(
+  supabase: Client,
+  params: GetRecurringTransactionsParams
+): Promise<RecurringTransaction[]> {
+  const {
+    streamId,
+    accountId,
+    merchantName,
+    startDate,
+    lastTransactionDate,
+    limit = 100,
+    offset = 0,
+  } = params;
+
+  let query: PostgrestFilterBuilder<
+    Database["public"]["Tables"]["recurring_transactions"]
+  > = supabase.from("recurring_transactions").select("*");
+
+  if (streamId) {
+    query = query.eq("stream_id", streamId);
+  }
+
+  if (accountId) {
+    query = query.eq("account_id", accountId);
+  }
+
+  if (merchantName) {
+    query = query.ilike("merchant_name", `%${merchantName}%`);
+  }
+
+  if (startDate) {
+    query = query.gte("first_date", startDate);
+  }
+
+  if (lastTransactionDate) {
+    query = query.lte("last_date", lastTransactionDate);
+  }
+
+  query = query
+    .order("last_date", { ascending: false })
+    .order("first_date", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(
+      `Error retrieving recurring transactions: ${error.message}`
+    );
+  }
+
+  return data || [];
 }

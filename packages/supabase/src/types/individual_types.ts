@@ -17,6 +17,7 @@ type ProductSchema = Tables<"products">;
 type RecurringTransactionSchema = Tables<"recurring_transactions">;
 type ReportsSchema = Tables<"reports">;
 type PersonalFinanceCategorySchema = Tables<"personal_finance_categories">;
+type TransactionIDSchema = Tables<"transaction_ids">;
 
 // Union types from the database schema
 type AccountType = Database["public"]["Enums"]["account_type"];
@@ -37,6 +38,16 @@ type TransactionCategories =
 type TransactionMethods = Database["public"]["Enums"]["transactionMethods"];
 type TransactionStatus = Database["public"]["Enums"]["transactionStatus"];
 type UserTier = Database["public"]["Enums"]["user_tier"];
+
+type RecurringTransactionsForInsert =
+  Database["public"]["Tables"]["recurring_transactions"]["Insert"] & {
+    personal_finance_category: {
+      primary: string;
+      detailed: string;
+      confidence_level: string;
+    };
+    transaction_ids: string[];
+  };
 
 // combined types
 type UserWithTeam = UserSchema & { team: TeamSchema };
@@ -65,6 +76,7 @@ export type {
   PricingType,
   ProductSchema,
   RecurringTransactionSchema,
+  RecurringTransactionsForInsert,
   ReportSchema,
   ReportsSchema,
   ReportTypes,
@@ -78,6 +90,7 @@ export type {
   TransactionCategories,
   TransactionCategorySchema,
   TransactionFrequency,
+  TransactionIDSchema,
   TransactionMethods,
   TransactionSchema,
   TransactionStatus,
