@@ -22,6 +22,7 @@ export const Jobs = {
   GENERATE_TAX_SUMMARY: "generate-tax-summary",
   MANUALLY_SCHEDULE_TRANSACTION_SYNC: "manually-schedule-transaction-sync",
   TRANSACTION_SYNC_ALL_TEAMS: "transaction-sync-all-teams",
+  TRANSACTION_EXPORT_DETAILS: "transaction-export-details",
 };
 
 export const Events = {
@@ -35,6 +36,7 @@ export const Events = {
   TRANSACTIONS_IMPORT: "transactions.import",
   UPDATE_CURRENCY: "update.base.currency",
   TRANSACTIONS_EXPORT_PDF: "transactions.export.pdf",
+  TRANSACTION_EXPORT_DETAILS: "transactions.export.details",
   IDENTIFY_UNUSUAL_TRANSACTIONS: "transactions.identify.unusual",
   GENERATE_TRANSACTION_SUMMARY: "transactions.generate.summary",
   REMOVE_OLD_TRANSACTIONS: "transactions.remove.old",

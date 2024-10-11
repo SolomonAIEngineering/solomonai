@@ -1,4 +1,5 @@
 import { Database } from "@midday/supabase/types";
+import type { TransactionsSchema as EngineTransaction } from "@solomon-ai/financial-engine-sdk/resources/transactions";
 import { IOWithIntegrations } from "@trigger.dev/sdk";
 import { Supabase } from "@trigger.dev/supabase";
 import { BATCH_LIMIT } from "../constants/constants";
@@ -6,7 +7,8 @@ import { BankAccountWithConnection } from "../types/bank-account-with-connection
 import { engine } from "../utils/engine";
 import { uniqueLog } from "../utils/log";
 import { processBatch } from "../utils/process";
-import { getClassification, transformTransaction } from "../utils/transform";
+import { getClassification, Transaction, transformTransaction } from "../utils/transform";
+import { sendTransactionsNotificationSubTask } from "./send-transaction-sync-notification";
 import { updateBankConnectionStatus } from "./update-bank-connection-status";
 
 /**
@@ -41,6 +43,7 @@ async function syncTransactionsSubTask(
   taskKeyPrefix: string
 ): Promise<{ success: boolean }> {
   const supabase = io.supabase.client;
+  let allNewTransactions: Transaction[] = [];
 
   const response = await io.runTask(
     `${taskKeyPrefix.toLocaleLowerCase()}-sync-transactions-subtask-${Date.now()}`,
@@ -169,6 +172,8 @@ async function syncTransactionsSubTask(
                 "info",
                 `Successfully upserted ${batch?.length || 0} transactions for account ${account.id}`
               );
+              // Add new transactions to allNewTransactions array
+              allNewTransactions = allNewTransactions.concat(batch || []);
             }
             return batch;
           }
@@ -190,8 +195,15 @@ async function syncTransactionsSubTask(
           "info", "All accounts processed successfully");
       }
 
-      // TODO: based on the sync event call the backend and sync the transactions for the backend
-
+      // Send notification for all new transactions
+      if (allNewTransactions.length > 0) {
+        await sendTransactionsNotificationSubTask(
+          io, 
+          allNewTransactions as Array<EngineTransaction.Data>, 
+          accountsData?.[0]?.team_id as string, 
+          taskKeyPrefix);
+      }
+  
       return {
         success: true,
       };

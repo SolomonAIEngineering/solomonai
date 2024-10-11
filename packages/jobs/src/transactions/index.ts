@@ -1,5 +1,6 @@
 export * from "./export";
 export * from "./export-pdf";
+export * from "./export-transaction-pdf";
 export * from "./identify-unusual";
 export * from "./import";
 export * from "./initial-sync";

@@ -54,7 +54,7 @@ export function BankAccountSheet({
   }, [bankAccount.id, isOpen]);
 
   const content = (
-    <div className="md:p-[3%]">
+    <div className="p-[0.5%] md:p-[3%]">
       <BankAccountDetails
         bankAccount={bankAccount}
         bankConnection={bankConnection}
