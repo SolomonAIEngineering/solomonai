@@ -38,13 +38,13 @@ type UserTier = Database["public"]["Enums"]["user_tier"];
 // combined types
 type UserWithTeam = UserSchema & { team: TeamSchema };
 type UserWithTeams = UserSchema & { teams: TeamSchema[] };
-
+type BankAccountWithTeam = BankAccountSchema & { team: TeamSchema };
+type BankAccountWithBankConnection = BankAccountSchema & { bank_connection: BankConnectionSchema };
 
 export type {
   // Union types
   AccountType,
-  BankAccountSchema,
-  BankConnectionSchema,
+  BankAccountSchema, BankAccountWithTeam, BankConnectionSchema,
   BankProviders,
   ConnectionStatus,
   DocumentSchema,
@@ -72,6 +72,7 @@ export type {
   TransactionStatus,
   UserSchema,
   UserTier,
-  UserWithTeam
+  UserWithTeam,
+  BankAccountWithBankConnection
 };
 
