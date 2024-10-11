@@ -3,7 +3,6 @@ import { addDays } from "date-fns";
 import { getCurrentUserTeamQuery, getUserInviteQuery } from "../queries";
 import type { Client, RecurringTransactionsForInsert } from "../types";
 import { Database } from "../types/db";
-import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
 
 type CreateBankAccountsPayload = {
   accounts: {
@@ -579,104 +578,4 @@ export async function insertRecurringTransactions(
   return {
     success: true,
   };
-}
-
-/**
- * Retrieves all associated transaction IDs for a given recurring transaction ID.
- *
- * @param supabase - The Supabase client instance.
- * @param recurringTransactionId - The UUID of the recurring transaction.
- *
- * @returns A Promise that resolves to an array of transaction IDs.
- *
- * @throws Will throw an error if the retrieval operation fails.
- *
- * @example
- * const transactionIds = await getAssociatedTransactions(supabase, '123e4567-e89b-12d3-a456-426614174000');
- */
-export async function getAssociatedTransactions(
-  supabase: Client,
-  recurringTransactionId: string
-): Promise<string[]> {
-  const { data, error } = await supabase
-    .from("transaction_ids")
-    .select("transaction_id")
-    .eq("recurring_transaction_id", recurringTransactionId);
-
-  if (error) {
-    throw new Error(
-      `Error retrieving associated transactions: ${error.message}`
-    );
-  }
-
-  return data?.map((item) => item.transaction_id) || [];
-}
-
-// Add this type and function to your mutations file
-
-type RecurringTransaction =
-  Database["public"]["Tables"]["recurring_transactions"]["Row"];
-
-type GetRecurringTransactionsParams = {
-  streamId?: string;
-  accountId?: string;
-  merchantName?: string;
-  startDate?: string;
-  lastTransactionDate?: string;
-  limit?: number;
-  offset?: number;
-};
-
-export async function getRecurringTransactions(
-  supabase: Client,
-  params: GetRecurringTransactionsParams
-): Promise<RecurringTransaction[]> {
-  const {
-    streamId,
-    accountId,
-    merchantName,
-    startDate,
-    lastTransactionDate,
-    limit = 100,
-    offset = 0,
-  } = params;
-
-  let query: PostgrestFilterBuilder<
-    Database["public"]["Tables"]["recurring_transactions"]
-  > = supabase.from("recurring_transactions").select("*");
-
-  if (streamId) {
-    query = query.eq("stream_id", streamId);
-  }
-
-  if (accountId) {
-    query = query.eq("account_id", accountId);
-  }
-
-  if (merchantName) {
-    query = query.ilike("merchant_name", `%${merchantName}%`);
-  }
-
-  if (startDate) {
-    query = query.gte("first_date", startDate);
-  }
-
-  if (lastTransactionDate) {
-    query = query.lte("last_date", lastTransactionDate);
-  }
-
-  query = query
-    .order("last_date", { ascending: false })
-    .order("first_date", { ascending: false })
-    .range(offset, offset + limit - 1);
-
-  const { data, error } = await query;
-
-  if (error) {
-    throw new Error(
-      `Error retrieving recurring transactions: ${error.message}`
-    );
-  }
-
-  return data || [];
 }
