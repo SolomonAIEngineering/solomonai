@@ -87,16 +87,6 @@ export function BankAccountDetails({
         </div>
       </div>
 
-      <div className="my-8">
-        {/** Add account balance, recurring transactions, and key metrics */}
-        <AccountBalanceChart 
-          currency={bankAccount.currency ?? "USD"}
-          data={[]} // TODO: Add actual balance history data
-          height={400}
-          className="w-full p-0"
-        />
-      </div>
-
       <Accordion
         type="multiple"
         defaultValue={["details", "connection", "transactions"]}

@@ -3,7 +3,6 @@
 import { Tables } from "@midday/supabase/types";
 import { Badge } from "@midday/ui/badge";
 import { Button, buttonVariants } from "@midday/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@midday/ui/card";
 import { cn } from "@midday/ui/cn";
 import {
   DropdownMenu,
