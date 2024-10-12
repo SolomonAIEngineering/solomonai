@@ -16,6 +16,7 @@ import { cn } from "@midday/ui/cn";
 import { Skeleton } from "@midday/ui/skeleton";
 import { format } from "date-fns";
 import { FormatAmount } from "./format-amount";
+import { RecentTransactionsServer } from "./recent-transactions/recent-transactions.server";
 import { TransactionsFilterHelper } from "./similar-transactions";
 
 interface BankAccountDetailsProps {
