@@ -8,18 +8,25 @@ import { Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
 
 interface InstallAppButtonProps {
+    id: string;
+    onInitialize: (callback?: () => void) => void;
+    active: boolean;
+    category: IntegrationCategory;
     installed: boolean;
     cfg: IntegrationConfig;
 }
 
 const InstallAppButton: React.FC<InstallAppButtonProps> = ({
-    cfg,
+    id,
+    onInitialize,
+    active,
+    category,
     installed,
+    cfg
 }) => {
     const [isLoading, setLoading] = useState(false);
     const [isModellingDialogOpen, setIsModellingDialogOpen] = useState(false);
     const { toast } = useToast();
-    const { id, onInitialize, active, category } = cfg;
 
     const handleOnInitialize = () => {
         setLoading(true);

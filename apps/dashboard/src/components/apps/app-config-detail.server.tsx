@@ -9,13 +9,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@midday/ui/tabs";
 import { ExternalLink } from "lucide-react";
 import { AwaitedReactNode, JSXElementConstructor, ReactElement, ReactNode } from "react";
 
-export default function AppConfigDetail({ config }: { config: IntegrationConfig }) {
+type AppConfigWithoutLogo = Omit<IntegrationConfig, 'logo'>;
+
+export default function AppConfigDetail({ config }: { config: AppConfigWithoutLogo }) {
     return (
         <Card className="w-full border-none">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                        {config.logo && <config.logo className="h-10 w-10" />}
+                        {/* {config.logo && <config.logo className="h-10 w-10" />} */}
                         <div>
                             <CardTitle>{config.name}</CardTitle>
                             <CardDescription>{config.short_description}</CardDescription>

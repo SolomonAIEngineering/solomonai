@@ -11,6 +11,7 @@ import { createClient } from "@midday/supabase/server";
 import { Button } from "@midday/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@midday/ui/carousel";
 import { Metadata } from "next";
+
 export const metadata: Metadata = {
     title: "Integrations | Solomon AI",
 };
@@ -58,9 +59,33 @@ export default async function Page({
         )
     }
 
-    // we check if the app is currently installed for the give user
-    const isAppInstalled = data?.some((app) => app.app_id === params.appid);
+    // we check if the app is currently installed for the given user
+    const isAppInstalled = data?.some((installedApp) => installedApp.app_id === params.appid);
 
+    // Prepare the config object for AppConfigDetail
+    const appConfigForDetail = {
+        name: app.name,
+        id: app.id,
+        category: app.category,
+        active: app.active,
+        logoUrl: typeof app.logo === 'string' ? app.logo : '',
+        short_description: app.short_description,
+        description: app.description,
+        images: app.images,
+        settings: app.settings,
+        config: app.config,
+        equation: app.equation,
+        model_type: app.model_type,
+        api_version: app.api_version,
+        is_public: app.is_public,
+        tags: app.tags,
+        integration_type: app.integration_type,
+        webhook_url: app.webhook_url,
+        supported_features: app.supported_features,
+        last_sync_at: app.last_sync_at,
+        sync_status: app.sync_status,
+        auth_method: app.auth_method,
+    };
 
     return (
         <ContentLayout title="Integrations">
@@ -74,7 +99,11 @@ export default async function Page({
                 {/** high level app details */}
                 <div className="flex flex-1 justify-between py-[4%]">
                     <div className="flex flex-1 gap-5">
-                        <app.logo className="w-24 h-24 border rounded-full" />
+                        {typeof app.logo === 'function' ? (
+                            <app.logo className="w-24 h-24 border rounded-full" />
+                        ) : (
+                            <img src={app.logo} alt={app.name} className="w-24 h-24 border rounded-full" />
+                        )}
                         <h3 className="text-2xl md:text-5xl font-bold">
                             {app.name}
                         </h3>
@@ -83,16 +112,11 @@ export default async function Page({
                         </Button>
                     </div>
                     <div>
-                        {isAppInstalled ? (
-                            <>
+                        {isAppInstalled && (
                             <DisconnectAppButton appId={app.id} appName={app.name} />
-                            </>
-                        ) : (
-                            <InstallAppButton installed={true} cfg={app} />
                         )}
                     </div>
                 </div>
-
 
                 {/** Disclose the images if present */}
                 {app.images && app.images.length > 1 &&
@@ -125,11 +149,13 @@ export default async function Page({
                 {/** main sections of the page of interest */}
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
                     <div className="col-span-3">
-                        <AppConfigDetail config={app} />
+                        <AppConfigDetail config={{
+                            ...appConfigForDetail,
+                            onInitialize: app.onInitialize
+                        }} />
                     </div>
                     <div className="col-span-2 flex flex-col gap-2 p-[2%]">
-                        <AppsDeveloperDetail config={
-                            {
+                        <AppsDeveloperDetail config={{
                                 company: config.company,
                                 webUrl: config.webUrl,
                                 documentationUrl: config.documentationUrl,
@@ -142,5 +168,4 @@ export default async function Page({
             </PortalViewWrapper>
         </ContentLayout>
     );
-
 }
