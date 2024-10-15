@@ -254,7 +254,7 @@ export class PlaidApi {
       console.log('Link token created successfully');
       return response;
     } catch (error: unknown) {
-      console.error('Error creating link token:', error);
+      console.error('Error creating link token:', JSON.stringify(error, null, 2));
       throw error;
     }
   }
