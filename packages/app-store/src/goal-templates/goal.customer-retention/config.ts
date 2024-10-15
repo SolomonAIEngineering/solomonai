@@ -1,8 +1,8 @@
-import { IntegrationCategory, ModellingIntegrationConfig } from "../../types";
+import { IntegrationCategory, IntegrationConfig } from "../../types";
 import { Logo } from "./assets/logo";
 import { initialize } from "./initialize";
 
-const customerRetentionGoalTemplate: ModellingIntegrationConfig = {
+const customerRetentionGoalTemplate: IntegrationConfig = {
   name: "Customer Retention Goal Template",
   id: "customer-retention-goal-template",
   category: IntegrationCategory.GoalTemplates,
@@ -101,7 +101,7 @@ const customerRetentionGoalTemplate: ModellingIntegrationConfig = {
         Number(variables["Custom Timeline (in days)"]) || 365;
 
       const customersToRetain = Math.round(
-        currentCustomers * (targetRetentionRate / 100),
+        currentCustomers * (targetRetentionRate / 100)
       );
       const projectedChurnRate = 100 - targetRetentionRate;
 

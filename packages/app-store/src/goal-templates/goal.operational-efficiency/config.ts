@@ -1,8 +1,8 @@
-import { IntegrationCategory, ModellingIntegrationConfig } from "../../types";
+import { IntegrationCategory, IntegrationConfig } from "../../types";
 import { Logo } from "./assets/logo";
 import { initialize } from "./initialize";
 
-const operationalEfficiencyGoalTemplate: ModellingIntegrationConfig = {
+const operationalEfficiencyGoalTemplate: IntegrationConfig = {
   name: "Operational Efficiency Goal Template",
   id: "operational-efficiency-goal-template",
   category: IntegrationCategory.GoalTemplates,

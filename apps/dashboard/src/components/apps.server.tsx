@@ -9,6 +9,8 @@ export async function AppsServer({ user }) {
     .select("app_id, settings")
     .eq("team_id", user.team_id);
 
+    console.log("installed apps for solomon ai", data);
+
   return (
     <Apps
       installedApps={data?.map((app) => app.app_id) ?? []}

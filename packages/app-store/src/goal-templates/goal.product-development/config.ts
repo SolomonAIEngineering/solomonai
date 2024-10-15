@@ -1,8 +1,8 @@
-import { IntegrationCategory, ModellingIntegrationConfig } from "../../types";
+import { IntegrationCategory, IntegrationConfig } from "../../types";
 import { Logo } from "./assets/logo";
 import { initialize } from "./initialize";
 
-const productDevelopmentGoalTemplate: ModellingIntegrationConfig = {
+const productDevelopmentGoalTemplate: IntegrationConfig = {
   name: "Product Development Goal Template",
   id: "product-development-goal-template",
   category: IntegrationCategory.GoalTemplates,

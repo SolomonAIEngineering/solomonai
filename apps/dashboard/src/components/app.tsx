@@ -1,7 +1,7 @@
 import { disconnectAppAction } from "@/actions/disconnect-app-action";
 import config from "@/config";
 import { capitalize } from "@/utils/utils";
-import { EquationConfig } from "@midday/app-store/types";
+import { EquationConfig, IntegrationCategory, IntegrationConfig } from '@midday/app-store/types';
 import {
   Accordion,
   AccordionContent,
@@ -13,12 +13,14 @@ import { Button } from "@midday/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@midday/ui/card";
 import { ScrollArea } from "@midday/ui/scroll-area";
 import { Sheet, SheetContent, SheetHeader } from "@midday/ui/sheet";
+import { useToast } from "@midday/ui/use-toast";
 import { useAction } from "next-safe-action/hooks";
 import Image from "next/image";
 import { parseAsBoolean, parseAsString, useQueryStates } from "nuqs";
 import { useState } from "react";
 import { AppSettings } from "./app-settings";
 import { Equation } from "./equation";
+import { AppsModellingModal } from "./modals/apps/app-modeling-modal";
 
 export function App({
   id,
@@ -34,6 +36,7 @@ export function App({
   category,
   userSettings,
   equation,
+  cfg
 }: {
   id: string;
   logo: React.ComponentType;
@@ -41,13 +44,14 @@ export function App({
   short_description: string;
   description: string;
   settings: Record<string, any>;
-  onInitialize: () => void;
+  onInitialize: (callback?: () => void) => void;
   images: string[];
   active?: boolean;
   installed?: boolean;
-  category: string;
+  category: IntegrationCategory;
   userSettings: Record<string, any>;
   equation?: EquationConfig;
+  cfg: IntegrationConfig;
 }) {
   const [params, setParams] = useQueryStates({
     app: parseAsString,
@@ -57,13 +61,40 @@ export function App({
   const [isLoading, setLoading] = useState(false);
   const disconnectApp = useAction(disconnectAppAction);
 
+  const [isModellingDialogOpen, setIsModellingDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+
   const handleDisconnect = () => {
     disconnectApp.execute({ appId: id });
   };
 
-  const handleOnInitialize = async () => {
+  const handleOnInitialize = () => {
     setLoading(true);
-    await onInitialize();
+    try {
+      if (category === IntegrationCategory.Modelling || category === IntegrationCategory.GoalTemplates) {
+        onInitialize(() => {
+          setIsModellingDialogOpen(true);
+        });
+      } else {
+        onInitialize(() => {
+          console.log("Non-modelling initialization completed");
+        });
+      }
+    } catch (error) {
+      toast({
+        duration: 2500,
+        variant: "error",
+        title: "There was an error installing the app.",
+        description: error instanceof Error ? error.message : String(error),
+        draggable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleModellingConfirm = async () => {
     setLoading(false);
   };
 
@@ -264,6 +295,16 @@ export function App({
           </div>
         </SheetContent>
       </Sheet>
+
+      {/** This modal is only to be used to enable connection of models or goal templates to a user account */}
+      <AppsModellingModal
+        isOpen={isModellingDialogOpen}
+        onClose={() => setIsModellingDialogOpen(false)}
+        appType={category as IntegrationCategory.GoalTemplates | IntegrationCategory.Modelling}
+        id={id}
+        installed={installed || false} 
+        cfg={cfg}
+      />
     </Card>
   );
 }

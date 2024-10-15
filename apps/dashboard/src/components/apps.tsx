@@ -2,7 +2,7 @@
 
 import { capitalize } from "@/utils/utils";
 import { apps, types } from "@midday/app-store";
-import { ModellingIntegrationConfig } from "@midday/app-store/types";
+import { IntegrationConfig } from "@midday/app-store/types";
 import { Button } from "@midday/ui/button";
 import {
   BarChart2,
@@ -88,7 +88,13 @@ export function Apps({
   const allApps = Object.values(apps).flat();
 
   const filteredApps = allApps
-    .filter((app) => !isInstalledPage || installedApps.includes(app.id))
+    .filter((app) => {
+      if (isInstalledPage) {
+        return installedApps.includes(app.id);
+      } else {
+        return !installedApps.includes(app.id);
+      }
+    })
     .filter(
       (app) => !search || app.name.toLowerCase().includes(search.toLowerCase()),
     )
@@ -156,8 +162,9 @@ export function Apps({
                 settings.find((setting) => setting.app_id === app.id)
                   ?.settings ?? []
               }
-              onInitialize={() => app.onInitialize(user)}
+              onInitialize={app.onInitialize}
               equation={"equation" in app ? app.equation : undefined}
+              cfg={app}
             />
           ))}
 
