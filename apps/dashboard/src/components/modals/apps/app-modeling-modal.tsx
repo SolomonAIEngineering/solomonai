@@ -77,7 +77,7 @@ export function AppsModellingModal({
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[575px] md:min-h-[65%] flex flex-col backdrop-blur-2xl">
-                <DialogHeader className="md:p-[3%] bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                <DialogHeader className="md:p-[5%] bg-gradient-to-r from-blue-500 to-purple-600 text-white">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-4">
                             <Logo />
