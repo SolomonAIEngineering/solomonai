@@ -15,7 +15,7 @@ async function syncTransactionsSubTask(
   io: IOWithIntegrations<{ supabase: Supabase<Database, "public", any> }>,
   accountsData: Array<BankAccountWithConnection> | null,
   taskKeyPrefix: string
-): Promise<{ success: boolean }> {
+): Promise<{ success: boolean; totalUpserts: number; totalFailedUpserts: number }> {
   const supabase = io.supabase.client;
   let allNewTransactions: Transaction[] = [];
 
@@ -24,13 +24,16 @@ async function syncTransactionsSubTask(
     async () => {
       if (!accountsData) {
         await uniqueLog(io, "info", "No accounts to process");
-        return { success: true };
+        return { success: true, totalUpserts: 0, totalFailedUpserts: 0 };
       }
 
-      await Promise.all(accountsData.map(processAccount));
+      const results = await Promise.all(accountsData.map(processAccount));
+      const totalUpserts = results.reduce((sum, result) => sum + result.successfulUpserts, 0);
+      const totalFailedUpserts = results.reduce((sum, result) => sum + result.failedUpserts, 0);
       await sendNotificationsIfNeeded();
 
-      return { success: true };
+      await uniqueLog(io, "info", `Sync completed. Total successful upserts: ${totalUpserts}, Total failed upserts: ${totalFailedUpserts}`);
+      return { success: true, totalUpserts, totalFailedUpserts };
     },
     { name: "Sync Transactions Sub Task" }
   );
@@ -40,7 +43,8 @@ async function syncTransactionsSubTask(
     const transactions = await fetchTransactions(account);
     const formattedTransactions = await transformTransactions(transactions, account);
     await updateAccountBalance(account);
-    await processTransactionBatches(formattedTransactions, account);
+    const { successfulUpserts, failedUpserts } = await processTransactionBatches(formattedTransactions, account);
+    return { successfulUpserts, failedUpserts };
   }
 
   async function logAccountInfo(account: BankAccountWithConnection) {
@@ -98,24 +102,40 @@ async function syncTransactionsSubTask(
   }
 
   async function processTransactionBatches(formattedTransactions: Transaction[], account: BankAccountWithConnection) {
-    await uniqueLog(io, "info", `Processing transactions in batches for account ${account.id}`);
+    await uniqueLog(io, "info", `Processing ${formattedTransactions.length} transactions in batches for account ${account.id}`);
+
+    let successfulUpserts = 0;
+    let failedUpserts = 0;
+
     await processBatch(formattedTransactions, BATCH_LIMIT, async (batch) => {
       await uniqueLog(io, "info", `Processing batch of ${batch.length} transactions for account ${account.id}`);
-      const { error } = await supabase
+
+      const { data, error, count } = await supabase
         .from("transactions")
-        .upsert(batch as any, {
+        .upsert(batch, {
           onConflict: "internal_id",
-          ignoreDuplicates: true,
-        });
+          ignoreDuplicates: false,
+        })
+        .select();
+
       if (error) {
         console.error(`Error upserting transactions for account ${account.id}:`, error);
+        await uniqueLog(io, "error", `Failed to upsert transactions for account ${account.id}: ${error.message}`);
+        failedUpserts += batch.length;
       } else {
-        await uniqueLog(io, "info", `Successfully upserted ${batch.length} transactions for account ${account.id}`);
-        allNewTransactions = allNewTransactions.concat(batch);
+        const upsertedCount = count ?? 0;
+        successfulUpserts += upsertedCount;
+        await uniqueLog(io, "info", `Successfully upserted ${upsertedCount} transactions for account ${account.id}`);
+        if (data) {
+          allNewTransactions = allNewTransactions.concat(data as Transaction[]);
+          await uniqueLog(io, "debug", `Upserted transactions: ${allNewTransactions.length} to accounts of interest`);
+        }
       }
       return batch;
     });
-    await uniqueLog(io, "info", `Finished processing all batches for account ${account.id}`);
+
+    await uniqueLog(io, "info", `Finished processing all batches for account ${account.id}. Total successful upserts: ${successfulUpserts}, Failed upserts: ${failedUpserts}`);
+    return { successfulUpserts, failedUpserts };
   }
 
   async function sendNotificationsIfNeeded() {
