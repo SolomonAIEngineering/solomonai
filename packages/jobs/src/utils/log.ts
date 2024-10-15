@@ -37,7 +37,7 @@ export async function uniqueLog(
   io: IOWithIntegrations<{
     supabase: Supabase<Database, "public", any>;
   }>,
-  level: "info" | "warn" | "error",
+  level: "info" | "warn" | "error" | "debug",
   message: string,
   data: Record<string, any> = {},
 ): Promise<void> {
