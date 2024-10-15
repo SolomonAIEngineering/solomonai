@@ -62,6 +62,8 @@ export default async function Page({
     // we check if the app is currently installed for the given user
     const isAppInstalled = data?.some((installedApp) => installedApp.app_id === params.appid);
 
+    // TODO: based on the type of integration, we want to query the backend for income and expense metrics and enable the end user to perform some degree of stress test on this
+
     // Prepare the config object for AppConfigDetail
     const appConfigForDetail = {
         name: app.name,
