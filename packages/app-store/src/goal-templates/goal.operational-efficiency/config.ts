@@ -1,4 +1,4 @@
-import { IntegrationCategory, IntegrationConfig } from "../../types";
+import { IntegrationCategory, IntegrationConfig, ModelType } from "../../types";
 import { Logo } from "./assets/logo";
 import { initialize } from "./initialize";
 
@@ -6,7 +6,7 @@ const operationalEfficiencyGoalTemplate: IntegrationConfig = {
   name: "Operational Efficiency Goal Template",
   id: "operational-efficiency-goal-template",
   category: IntegrationCategory.GoalTemplates,
-  active: false,
+  active: true,
   logo: Logo,
   short_description:
     "Set and track operational efficiency goals for your business.",
@@ -297,6 +297,16 @@ const operationalEfficiencyGoalTemplate: IntegrationConfig = {
       };
     },
   },
+  model_type: ModelType.FinancialModel,
+  api_version: "v1.0.0",
+  is_public: false,
+  tags: ["analysis", "financial", "projection"],
+  integration_type: undefined,
+  webhook_url: "https://gateway.solomon-ai-platform.com",
+  supported_features: undefined,
+  last_sync_at: new Date().toISOString(),
+  sync_status: undefined,
+  auth_method: "none"
 };
 
 export default operationalEfficiencyGoalTemplate;

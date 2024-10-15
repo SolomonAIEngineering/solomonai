@@ -1,8 +1,7 @@
 import { addAppToAccountAction } from "@/actions/add-app-to-account-action";
 import config from "@/config";
 import { capitalize } from "@/utils/utils";
-import { IntegrationCategory, IntegrationConfig, IntegrationType } from "@midday/app-store/types";
-import { Badge } from "@midday/ui/badge";
+import { IntegrationCategory, IntegrationConfig } from "@midday/app-store/types";
 import { Button } from "@midday/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@midday/ui/dialog";
 import { useToast } from "@midday/ui/use-toast";
@@ -77,8 +76,8 @@ export function AppsModellingModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[525px] md:min-h-[60%] flex flex-col">
-                <DialogHeader className="md:p-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+            <DialogContent className="sm:max-w-[575px] md:min-h-[65%] flex flex-col backdrop-blur-2xl">
+                <DialogHeader className="md:p-[3%] bg-gradient-to-r from-blue-500 to-purple-600 text-white">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-4">
                             <Logo />
@@ -89,10 +88,10 @@ export function AppsModellingModal({
                                 </p>
                             </div>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        {/* <div className="flex items-center space-x-2 pt-[3%]">
                             {installed && <Badge variant="outline">Installed</Badge>}
-                            <Badge variant="secondary">{capitalize(category)}</Badge>
-                        </div>
+                            <Badge variant="outline" className="text-xs">{capitalize(category)}</Badge>
+                        </div> */}
                     </div>
                     <div className="md:p-[2%]">
                         <div className="flex justify-between">

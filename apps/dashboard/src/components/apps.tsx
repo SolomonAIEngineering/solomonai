@@ -88,13 +88,7 @@ export function Apps({
   const allApps = Object.values(apps).flat();
 
   const filteredApps = allApps
-    .filter((app) => {
-      if (isInstalledPage) {
-        return installedApps.includes(app.id);
-      } else {
-        return !installedApps.includes(app.id);
-      }
-    })
+    .filter((app) => !isInstalledPage || installedApps.includes(app.id))
     .filter(
       (app) => !search || app.name.toLowerCase().includes(search.toLowerCase()),
     )
