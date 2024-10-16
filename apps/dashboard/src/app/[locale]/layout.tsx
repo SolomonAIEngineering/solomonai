@@ -75,7 +75,7 @@ export const maxDuration = 60;
 
 
 // Initialize the backend client on the server side
-// so backend client is initialized as soon as the app starts
+// so backend client is initialized as soon as the app starts ......
 initializeBackendClient();
 
 

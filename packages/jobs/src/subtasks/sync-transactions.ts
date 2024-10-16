@@ -2,6 +2,7 @@ import { Database } from "@midday/supabase/types";
 import type { TransactionsSchema as EngineTransaction } from "@solomon-ai/financial-engine-sdk/resources/transactions";
 import { IOWithIntegrations } from "@trigger.dev/sdk";
 import { Supabase } from "@trigger.dev/supabase";
+import { last } from "pdf-lib";
 import { BATCH_LIMIT } from "../constants/constants";
 import { BankAccountWithConnection } from "../types/bank-account-with-connection";
 import { engine } from "../utils/engine";
@@ -37,9 +38,18 @@ async function syncTransactionsSubTask(
 
   async function processAccount(account: BankAccountWithConnection) {
     await logAccountInfo(account);
-    const transactions = await fetchTransactions(account);
+    const {
+      transactions,
+      cursor,
+      hasMore,
+    } = await fetchTransactions(account);
     const formattedTransactions = await transformTransactions(transactions, account);
     await updateAccountBalance(account);
+    // TODO: save the cursor to the database
+    await supabase
+      .from("bank_connections")
+      .update({ last_cursor_sync: cursor, last_accessed_at: new Date().toISOString() })
+      .eq("id", account.id);
     await processTransactionBatches(formattedTransactions, account);
   }
 
@@ -53,15 +63,28 @@ async function syncTransactionsSubTask(
   async function fetchTransactions(account: BankAccountWithConnection) {
     await uniqueLog(io, "info", `Fetching transactions for account ${account.id}`);
     const accountType = getClassification(account.type);
-    const transactions = await engine.transactions.list({
+    const {
+      data: transactions,
+      cursor,
+      hasMore,
+    } = await engine.transactions.list({
       provider: account.bank_connection.provider,
       accountId: account.account_id,
       accountType: accountType as "depository" | "credit" | "other_asset" | "loan" | "other_liability" | undefined,
       accessToken: account.bank_connection?.access_token,
       latest: "true",
     });
-    await uniqueLog(io, "info", `Retrieved ${transactions.data?.length || 0} transactions for account ${account.id} (Type: ${accountType})`);
-    return transactions.data || [];
+    await uniqueLog(io, "info", `Retrieved ${transactions?.length || 0} transactions for account ${account.id} (Type: ${accountType})`);
+    console.log("we retrived a set of transactions from the api", {
+      transactions,
+      cursor,
+      hasMore,
+    })
+    return {
+      transactions,
+      cursor,
+      hasMore,
+    };
   }
 
   async function transformTransactions(transactions: EngineTransaction.Data[], account: BankAccountWithConnection) {
