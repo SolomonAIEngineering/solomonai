@@ -1,23 +1,13 @@
 import { Group } from "@/types/index";
 import {
-  BriefcaseIcon,
-  CubeTransparentIcon,
-  WalletIcon,
-} from "@heroicons/react/24/outline";
-import {
   CpuIcon,
   Database,
   DollarSign,
   FileAxis3D,
   FileText,
   InboxIcon,
-  LayoutGrid,
-  PieChart,
-  Settings,
-  TableCellsMergeIcon,
-  Timer,
-  TrendingDown,
-  TrendingUp,
+  LayoutGrid, Settings,
+  TableCellsMergeIcon
 } from "lucide-react";
 
 /**
@@ -195,7 +185,26 @@ const menuConfig: Group[] = [
         href: "/apps",
         label: "Market Place",
         icon: FileText,
-        submenus: [],
+        submenus: [
+          {
+            // This is where users can view all available apps in the marketplace
+            href: "/apps",
+            label: "All Apps",
+            active: false,
+          },
+          {
+            // This is where users can view all available apps that they have installed on their account
+            href: "/apps/installed",
+            label: "My Apps | Beta",
+            active: false,
+          },
+          {
+            // This is where users can play with their data against an app prior to installing it
+            href: "/apps/sandbox",
+            label: "Sandbox | Beta",
+            active: false,
+          }
+      ],
         active: false,
       },
     ],
