@@ -64,8 +64,8 @@ export interface ZoomableChartProps extends React.HTMLAttributes<HTMLDivElement>
 
 const chartConfig = {
   events: {
-    label: "Events",
-    color: "hsl(var(--chart-1))",
+    label: "Data Points",
+    color: "#333",
   },
 } satisfies ChartConfig;
 

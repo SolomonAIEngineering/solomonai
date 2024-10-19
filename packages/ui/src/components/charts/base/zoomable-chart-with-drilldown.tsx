@@ -1,38 +1,39 @@
 import { format, isValid, parseISO } from "date-fns";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Area,
-  Bar,
-  CartesianGrid,
-  ComposedChart,
-  Line,
-  ReferenceArea,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
+    Area,
+    Bar,
+    CartesianGrid,
+    ComposedChart,
+    Line,
+    ReferenceArea,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
 } from "recharts";
+import { cn } from "../../../utils";
 import { Button } from "../../button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
 } from "../../card";
 import {
-  ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
+    ChartConfig,
+    ChartContainer,
+    ChartLegend,
+    ChartLegendContent,
 } from "../../chart";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
 } from "../../dialog";
 
 /**
@@ -69,6 +70,7 @@ export type ZoomableChartWithDrilldownProps = {
   onShare?: () => void;
   /** Callback function for export to model action */
   onExportToModel?: () => void;
+  className?: string;
 };
 
 const chartConfig = {
@@ -106,6 +108,7 @@ export function ZoomableChartWithDrilldown({
   onDrilldown,
   onShare,
   onExportToModel,
+  className,
 }: ZoomableChartWithDrilldownProps) {
   const [data, setData] = useState<DataPoint[]>(initialData || []);
   const [refAreaLeft, setRefAreaLeft] = useState<string | null>(null);
@@ -322,7 +325,7 @@ export function ZoomableChartWithDrilldown({
   };
 
   return (
-    <Card className="w-full h-full">
+      <Card className={cn("w-full h-full", className )}>
       <CardHeader className="flex-col items-stretch space-y-0 border-b p-0 sm:flex-row hidden sm:flex">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
           {title && <CardTitle>{title}</CardTitle>}
