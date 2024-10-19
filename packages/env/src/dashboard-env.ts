@@ -194,14 +194,15 @@ export const dashboardEnvironment = createEnv({
     NEXT_PUBLIC_ENABLE_ANALYTICS_V2: z
       .preprocess(booleanParser, z.boolean())
       .default(false),
-    NEXT_PUBLIC_SOLOMON_BACKEND_INTERACTIONS_ENABLED: z.preprocess(
-      booleanParser,
-      z.boolean()
-    ).default(true),
-    NEXT_PUBLIC_ENTERPRISE_TIER_ENABLED: z.preprocess(
-      booleanParser,
-      z.boolean()
-    ).default(false),
+    NEXT_PUBLIC_SOLOMON_BACKEND_INTERACTIONS_ENABLED: z
+      .preprocess(booleanParser, z.boolean())
+      .default(true),
+    NEXT_PUBLIC_ENTERPRISE_TIER_ENABLED: z
+      .preprocess(booleanParser, z.boolean())
+      .default(false),
+    NEXT_PUBLIC_ENABLE_MULTIPLE_TEAMS_SUPPORT: z
+      .preprocess(booleanParser, z.boolean())
+      .default(false),
   },
   runtimeEnv: {
     NODE_ENV: process.env["NODE_ENV"],
@@ -281,14 +282,14 @@ export const dashboardEnvironment = createEnv({
     ENABLE_RATE_LIMITING: process.env["ENABLE_RATE_LIMITING"],
     NEXT_PUBLIC_ENABLE_ANALYTICS_V2:
       process.env["NEXT_PUBLIC_ENABLE_ANALYTICS_V2"],
-    NEXT_PUBLIC_SOLOMON_BACKEND_INTERACTIONS_ENABLED: process.env[
-      "NEXT_PUBLIC_SOLOMON_BACKEND_INTERACTIONS_ENABLED"
-    ],
-    NEXT_PUBLIC_ENTERPRISE_TIER_ENABLED: process.env[
-      "NEXT_PUBLIC_ENTERPRISE_TIER_ENABLED"
-    ],
+    NEXT_PUBLIC_SOLOMON_BACKEND_INTERACTIONS_ENABLED:
+      process.env["NEXT_PUBLIC_SOLOMON_BACKEND_INTERACTIONS_ENABLED"],
+    NEXT_PUBLIC_ENTERPRISE_TIER_ENABLED:
+      process.env["NEXT_PUBLIC_ENTERPRISE_TIER_ENABLED"],
     LOG_LEVEL: process.env["LOG_LEVEL"],
     USE_LEGACY_DATABASE: process.env["USE_LEGACY_DATABASE"],
+    NEXT_PUBLIC_ENABLE_MULTIPLE_TEAMS_SUPPORT:
+      process.env["NEXT_PUBLIC_ENABLE_MULTIPLE_TEAMS_SUPPORT"],
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 });
@@ -343,6 +344,10 @@ export const featureFlags = {
   uiVersion: dashboardEnvironment.NEXT_PUBLIC_NEW_UI_VERSION,
   isPaymentsEnabled: dashboardEnvironment.NEXT_PUBLIC_PAYMENTS_ENABLED,
   isAnalyticsV2Enabled: dashboardEnvironment.NEXT_PUBLIC_ENABLE_ANALYTICS_V2,
-  isSolomonBackendInteractionsEnabled: dashboardEnvironment.NEXT_PUBLIC_SOLOMON_BACKEND_INTERACTIONS_ENABLED,
-  isEnterpriseTierEnabled: dashboardEnvironment.NEXT_PUBLIC_ENTERPRISE_TIER_ENABLED,
+  isSolomonBackendInteractionsEnabled:
+    dashboardEnvironment.NEXT_PUBLIC_SOLOMON_BACKEND_INTERACTIONS_ENABLED,
+  isEnterpriseTierEnabled:
+    dashboardEnvironment.NEXT_PUBLIC_ENTERPRISE_TIER_ENABLED,
+  isMultipleTeamsSupportEnabled:
+    dashboardEnvironment.NEXT_PUBLIC_ENABLE_MULTIPLE_TEAMS_SUPPORT,
 };
