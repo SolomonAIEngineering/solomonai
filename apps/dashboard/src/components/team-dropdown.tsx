@@ -13,7 +13,7 @@ import { useState } from "react";
 
 /**
  * TeamDropdown component for displaying and managing team selection.
- * 
+ *
  * This component renders a dropdown menu that allows users to switch between
  * different teams or create a new team. It uses Framer Motion for animations
  * and integrates with a team change action.
@@ -44,11 +44,7 @@ export function TeamDropdown({ selectedTeamId: initialId, teams }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <motion.div 
-        ref={ref} 
-        layout 
-        className="md:w-[300px] relative z-50"
-      >
+      <motion.div ref={ref} layout className="md:w-[300px] relative z-50">
         <div
           className="w-full h-[32px] flex items-center px-2 rounded-sm border border-[#DCDAD2] dark:border-[#2C2C2C] cursor-pointer bg-white dark:bg-gray-800"
           onClick={toggleActive}
@@ -60,8 +56,12 @@ export function TeamDropdown({ selectedTeamId: initialId, teams }) {
               {selectedTeam?.team?.name?.charAt(1)?.toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <span className="text-sm truncate flex-grow">{selectedTeam?.team?.name}</span>
-          <Icons.ChevronDown className={`ml-2 transition-transform ${isActive ? 'rotate-180' : ''}`} />
+          <span className="text-sm truncate flex-grow">
+            {selectedTeam?.team?.name}
+          </span>
+          <Icons.ChevronDown
+            className={`ml-2 transition-transform ${isActive ? "rotate-180" : ""}`}
+          />
         </div>
 
         <AnimatePresence>
@@ -97,7 +97,10 @@ export function TeamDropdown({ selectedTeamId: initialId, teams }) {
                       onClick={() => {
                         setSelectedId(team.id);
                         setActive(false);
-                        changeTeam.execute({ teamId: team.id, redirectTo: "/" });
+                        changeTeam.execute({
+                          teamId: team.id,
+                          redirectTo: "/",
+                        });
                       }}
                     >
                       <Avatar className="w-[24px] h-[24px] mr-2">
