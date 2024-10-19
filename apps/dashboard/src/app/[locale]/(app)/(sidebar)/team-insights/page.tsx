@@ -1,6 +1,7 @@
 import { AccountSummarySection } from "@/components/cash-flow/account-summary-section";
 import { DailyExpensesChart } from "@/components/charts/team-insights/daily-expenses-chart/daily-expenses-chart";
 import { ExpenseMetricsChart } from "@/components/charts/team-insights/expense-metrics/expense-metrics-chart";
+import { IncomeMetricsChart } from "@/components/charts/team-insights/income-metrics/income-metrics-chart";
 import ConnectAccountServerWrapper from "@/components/connect-account-server-wrapper";
 import { DateRangeSelector } from "@/components/date-range-selector";
 import { InboxViewSkeleton } from "@/components/inbox-skeleton";
@@ -33,12 +34,13 @@ export default async function CashFlowPage({ searchParams }: Props) {
     const isEmpty = !accounts?.data?.length;
 
     const tier: Tier = user?.data?.tier ?? "free";
+    const userId = user?.data?.id as string;
 
     const effectiveFrom = from || defaultValue.from;
     const effectiveTo = to || defaultValue.to;
     const effectiveCurrency = currency || "USD";
     const effectivePage = page || "1";
-    const effectivePageSize = pageSize || "100";
+    const effectivePageSize = pageSize || "50";
 
     return (
         <Suspense fallback={<InboxViewSkeleton ascending />}>
@@ -55,30 +57,36 @@ export default async function CashFlowPage({ searchParams }: Props) {
                             className="border-none shadow-none"
                         />
                         <Tabs defaultValue="income" className="px-[2%]">
-                            <TabsList className="w-fit">
-                                <TabsTrigger value="income">Income</TabsTrigger>
-                                <TabsTrigger value="expense">Expense</TabsTrigger>
-                            </TabsList>
+                            <div className="flex justify-between items-center">
+                                <TabsList className="w-fit">
+                                    <TabsTrigger value="income">Income</TabsTrigger>
+                                    <TabsTrigger value="expense">Expense</TabsTrigger>
+                                </TabsList>
+                                <div className="flex items-center gap-4">
+                                    <DateRangeSelector from={effectiveFrom} to={effectiveTo} />
+                                </div>
+                            </div>
                             <TabsContent value="income">
                                 <div className="md:min-h-full bg-background/10">
-                                    <p>Income</p>
-                                </div>
-                            </TabsContent>
-                            <TabsContent value="expense">
-                                <div className="md:min-h-full bg-background/10">
-                                    <DateRangeSelector from={effectiveFrom} to={effectiveTo} />
-                                    <DailyExpensesChart 
-                                        currency={effectiveCurrency} 
-                                        className="border-none shadow-none" 
-                                        from={effectiveFrom}
-                                        to={effectiveTo}
-                                    />
-                                    <ExpenseMetricsChart 
+                                    <IncomeMetricsChart
                                         currency={effectiveCurrency}
                                         from={effectiveFrom}
                                         to={effectiveTo}
                                         pageNumber={effectivePage}
                                         pageSize={effectivePageSize}
+                                        userId={userId}
+                                    />
+                                </div>
+                            </TabsContent>
+                            <TabsContent value="expense">
+                                <div className="md:min-h-full bg-background/10 flex flex-col gap-4">
+                                    <ExpenseMetricsChart
+                                        currency={effectiveCurrency}
+                                        from={effectiveFrom}
+                                        to={effectiveTo}
+                                        pageNumber={effectivePage}
+                                        pageSize={effectivePageSize}
+                                        userId={userId}
                                     />
                                 </div>
                             </TabsContent>

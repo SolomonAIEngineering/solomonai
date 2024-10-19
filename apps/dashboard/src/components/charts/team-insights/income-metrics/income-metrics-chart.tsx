@@ -3,13 +3,13 @@
 import { getBackendClient } from "@/utils/backend";
 import { formatCategoryName } from "@/utils/utils";
 import { DataPoint, ZoomableChartWithDrilldown } from "@midday/ui/charts/base/zoomable-chart-with-drilldown";
-import { NetExpenseChart } from "@midday/ui/charts/financials/expenses/net-expense-chart";
+import { NetIncomeChart } from "@midday/ui/charts/financials/net-income/net-income-chart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@midday/ui/select";
-import { ExpenseMetrics, GetExpenseMetricsProfileTypeEnum, GetExpenseMetricsRequest } from "@solomon-ai/client-typescript-sdk";
+import { GetIncomeMetricsProfileTypeEnum, GetIncomeMetricsRequest, IncomeMetrics } from "@solomon-ai/client-typescript-sdk";
 import { format, parse, startOfMonth, subMonths } from 'date-fns';
 import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 
-interface ExpenseMetricsChartProps extends React.HTMLAttributes<HTMLDivElement> {
+interface IncomeMetricsChartProps extends React.HTMLAttributes<HTMLDivElement> {
     className?: string;
     from?: string;
     to?: string;
@@ -19,25 +19,25 @@ interface ExpenseMetricsChartProps extends React.HTMLAttributes<HTMLDivElement> 
     userId: string;
 }
 
-const useExpenseMetrics = (userId: string, pageNumber: string, pageSize: string, selectedCategory: string) => {
-    const [expenseMetrics, setExpenseMetrics] = useState<ExpenseMetrics[] | null>(null);
+const useIncomeMetrics = (userId: string, pageNumber: string, pageSize: string, selectedCategory: string) => {
+    const [IncomeMetrics, setIncomeMetrics] = useState<IncomeMetrics[] | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
-        const fetchExpenseMetrics = async () => {
+        const fetchIncomeMetrics = async () => {
             setIsLoading(true);
             try {
                 const c = getBackendClient();
-                const request: GetExpenseMetricsRequest = {
+                const request: GetIncomeMetricsRequest = {
                     userId,
                     pageNumber,
                     pageSize,
-                    profileType: GetExpenseMetricsProfileTypeEnum.Business,
+                    profileType: GetIncomeMetricsProfileTypeEnum.Business,
                     personalFinanceCategoryPrimary: selectedCategory !== 'All' ? selectedCategory : undefined
                 };
-                const response = await c.financialServiceApi.getExpenseMetrics(request);
-                setExpenseMetrics(response.expenseMetrics || null);
+                const response = await c.financialServiceApi.getIncomeMetrics(request);
+                setIncomeMetrics(response.incomeMetrics || null);
             } catch (err) {
                 setError(err instanceof Error ? err : new Error('An error occurred'));
             } finally {
@@ -45,10 +45,10 @@ const useExpenseMetrics = (userId: string, pageNumber: string, pageSize: string,
             }
         };
 
-        fetchExpenseMetrics();
+        fetchIncomeMetrics();
     }, [userId, pageNumber, pageSize, selectedCategory]);
 
-    return { expenseMetrics, isLoading, error };
+    return { IncomeMetrics, isLoading, error };
 };
 
 const formatYearMonth = (yearMonth: string): string => {
@@ -56,7 +56,7 @@ const formatYearMonth = (yearMonth: string): string => {
     return format(date, 'MMMM yyyy');
 };
 
-const ExpenseMetricsChartContent: React.FC<ExpenseMetricsChartProps> = ({
+const IncomeMetricsChartContent: React.FC<IncomeMetricsChartProps> = ({
     className,
     from,
     to,
@@ -66,7 +66,7 @@ const ExpenseMetricsChartContent: React.FC<ExpenseMetricsChartProps> = ({
     pageSize = "80"
 }) => {
     const [selectedCategory, setSelectedCategory] = useState('All');
-    const { expenseMetrics, isLoading, error } = useExpenseMetrics(userId, pageNumber, pageSize, selectedCategory);
+    const { IncomeMetrics, isLoading, error } = useIncomeMetrics(userId, pageNumber, pageSize, selectedCategory);
 
     const today = useMemo(() => new Date(), []);
     const defaultFrom = useMemo(() => format(startOfMonth(subMonths(today, 1)), 'yyyy-MM-dd'), [today]);
@@ -75,15 +75,15 @@ const ExpenseMetricsChartContent: React.FC<ExpenseMetricsChartProps> = ({
     const effectiveTo = to || defaultTo;
 
     const categories = useMemo(() => {
-        if (!expenseMetrics) return ['All'];
-        return ['All', ...new Set(expenseMetrics.map(metric => metric.personalFinanceCategoryPrimary).filter(Boolean))];
-    }, [expenseMetrics]);
+        if (!IncomeMetrics) return ['All'];
+        return ['All', ...new Set(IncomeMetrics.map(metric => metric.personalFinanceCategoryPrimary).filter(Boolean))];
+    }, [IncomeMetrics]);
 
-    const transformExpenseData = useCallback((expenseMetrics: ExpenseMetrics[]): DataPoint[] => {
-        return expenseMetrics
+    const transformExpenseData = useCallback((IncomeMetrics: IncomeMetrics[]): DataPoint[] => {
+        return IncomeMetrics
             .map((expense) => ({
                 date: formatYearMonth(expense.month?.toString() ?? ""),
-                events: Number(Math.abs(expense.totalExpenses ?? 0).toFixed(2)),
+                events: Number(Math.abs(expense.totalIncome ?? 0).toFixed(2)),
                 originalMonth: expense.month // Keep the original month for sorting
             }))
             .sort((a, b) => (a.originalMonth ?? 0) - (b.originalMonth ?? 0)) // Sort by original month
@@ -91,20 +91,19 @@ const ExpenseMetricsChartContent: React.FC<ExpenseMetricsChartProps> = ({
     }, []);
 
     const data = useMemo(() => {
-        if (!expenseMetrics) return [];
-        return transformExpenseData(expenseMetrics);
-    }, [expenseMetrics, transformExpenseData]);
+        if (!IncomeMetrics) return [];
+        return transformExpenseData(IncomeMetrics);
+    }, [IncomeMetrics, transformExpenseData]);
 
     const hasData = data.length > 0;
 
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.message}</div>;
-    if (!expenseMetrics) return null;
+    if (!IncomeMetrics) return null;
 
-    // format expense metrics value
-    const expenseMetricsData: Array<ExpenseMetrics> = expenseMetrics.map((metric) => ({
+    const incomeMetricsData: Array<IncomeMetrics> = IncomeMetrics.map((metric) => ({
         ...metric,
-        totalExpenses: Number(Math.abs(metric.totalExpenses ?? 0).toFixed(2)),
+        totalIncome: Number(Math.abs(metric.totalIncome ?? 0).toFixed(2)),
     }));
 
     return (
@@ -125,32 +124,33 @@ const ExpenseMetricsChartContent: React.FC<ExpenseMetricsChartProps> = ({
             <div className="flex flex-col gap-4 text-4xl py-[5%] font-bold justify-start items-start w-[50%]">
                 Your expenses for the period from {effectiveFrom} to {effectiveTo} across the {formatCategoryName(selectedCategory as string).toLocaleLowerCase()} category
             </div>
-
+            
             <ZoomableChartWithDrilldown
                 data={hasData ? data : [{ date: effectiveFrom, events: 0 }, { date: effectiveTo, events: 0 }]}
-                dataNameKey="expenses"
+                dataNameKey="income"
                 height={600}
-                footerDescription={hasData ? `Total expenses (${formatCategoryName(selectedCategory)})` : "No expense data available for the selected period"}
+                footerDescription={hasData ? `Total income (${formatCategoryName(selectedCategory)})` : "No expense data available for the selected period"}
                 chartType="area"
-                description={hasData ? `Monthly expenses (${formatCategoryName(selectedCategory)})` : "No expenses recorded"}
-                title={`Monthly Expenses (${format(new Date(effectiveFrom), 'MMM d, yyyy')} - ${format(new Date(effectiveTo), 'MMM d, yyyy')})`}
+                description={hasData ? `Monthly income (${formatCategoryName(selectedCategory)})` : "No income recorded"}
+                title={`Monthly income (${format(new Date(effectiveFrom), 'MMM d, yyyy')} - ${format(new Date(effectiveTo), 'MMM d, yyyy')})`}
                 className={!hasData ? "opacity-50" : className}
             />
-            <NetExpenseChart title={"Net Expense Metrics"} price={expenseMetricsData[expenseMetricsData.length - 1]?.totalExpenses ?? 0} priceChange={0} expenseMetrics={expenseMetricsData ?? []} currency={"USD"} />
+            <NetIncomeChart title={"Net Income Metrics"} price={incomeMetricsData[incomeMetricsData.length - 1]?.totalIncome ?? 0} priceChange={0} incomeMetrics={incomeMetricsData ?? []} currency={"USD"} />
+
         </div>
     );
 };
 
-const ExpenseMetricsChart: React.FC<ExpenseMetricsChartProps> = (props) => {
+const IncomeMetricsChart: React.FC<IncomeMetricsChartProps> = (props) => {
     return (
         <Suspense fallback={
             <div className="flex items-center justify-center h-full">
-                <p>Loading expenses chart...</p>
+                <p>Loading income chart...</p>
             </div>
         }>
-            <ExpenseMetricsChartContent {...props} />
+            <IncomeMetricsChartContent {...props} />
         </Suspense>
     );
 };
 
-export { ExpenseMetricsChart };
+export { IncomeMetricsChart };

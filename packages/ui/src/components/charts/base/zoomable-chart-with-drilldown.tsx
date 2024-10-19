@@ -1,39 +1,41 @@
+"use client";
+
 import { format, isValid, parseISO } from "date-fns";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-    Area,
-    Bar,
-    CartesianGrid,
-    ComposedChart,
-    Line,
-    ReferenceArea,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
+  Area,
+  Bar,
+  CartesianGrid,
+  ComposedChart,
+  Line,
+  ReferenceArea,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 import { cn } from "../../../utils";
 import { Button } from "../../button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "../../card";
 import {
-    ChartConfig,
-    ChartContainer,
-    ChartLegend,
-    ChartLegendContent,
+  ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
 } from "../../chart";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from "../../dialog";
 
 /**

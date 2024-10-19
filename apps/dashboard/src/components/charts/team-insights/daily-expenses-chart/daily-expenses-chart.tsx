@@ -1,5 +1,6 @@
 import { getDailyExpenses, getTeams, getUser } from "@midday/supabase/cached-queries";
 import { DataPoint, ZoomableChart } from "@midday/ui/charts/base/zoomable-chart";
+import { ZoomableChartWithDrilldown } from "@midday/ui/charts/base/zoomable-chart-with-drilldown";
 import { format, startOfMonth, subMonths } from 'date-fns';
 import React, { Suspense } from 'react';
 
@@ -50,7 +51,7 @@ const DailyExpensesChartContent: React.FC<DailyExpensesChartProps> = async ({
     const hasData = data.length > 0;
 
     return (
-        <ZoomableChart
+        <ZoomableChartWithDrilldown
             data={hasData ? data : [{ date: effectiveFrom, events: 0 }, { date: effectiveTo, events: 0 }]}
             dataNameKey="expenses"
             height={500}
