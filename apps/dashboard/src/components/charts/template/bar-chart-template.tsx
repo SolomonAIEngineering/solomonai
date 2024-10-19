@@ -5,9 +5,9 @@ import { useMediaQuery } from "@midday/ui/use-media-query";
 import { ArrowUpRightFromSquare } from "lucide-react";
 import Link from "next/link";
 import React, { useCallback, useMemo } from "react";
-import { Area, AreaChart, ResponsiveContainer, Tooltip } from "recharts";
+import { Bar, BarChart, ResponsiveContainer, Tooltip } from "recharts";
 
-interface MergedAccountChartProps<T extends TimeseriesDataType> extends React.HTMLAttributes<HTMLDivElement> {
+interface TimeSeriesBarChartProps<T extends TimeseriesDataType> extends React.HTMLAttributes<HTMLDivElement> {
     data?: Array<T>;
     className?: string;
     link?: string;
@@ -35,7 +35,7 @@ interface MergedAccountChartProps<T extends TimeseriesDataType> extends React.HT
  * @param count - Number of data points to generate
  * @param startDate - Starting date for the generated data
  * @param isGrowthRate - Flag to determine if generating growth rate or balance data
- * @returns An array of ChartDataType objects
+ * @returns An array of TimeseriesDataType objects
  */
 const generateRandomData = (
     count: number,
@@ -55,15 +55,15 @@ const generateRandomData = (
 };
 
 /**
- * MergedAccountChart component displays a chart for account balance or growth rate data.
+ * TimeSeriesBarChart component displays a bar chart for time series data.
  * It can adapt to different data types and display formats based on the provided props.
  */
-const MergedAccountChart: React.FC<MergedAccountChartProps<TimeseriesDataType>> = React.memo(
+const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps<TimeseriesDataType>> = React.memo(
     ({
         data,
         className,
         link,
-        title = "Account Chart",
+        title = "Time Series Bar Chart",
         chartHeights = {
             mediumScreen: 600,
             smallScreen: 300,
@@ -105,7 +105,7 @@ const MergedAccountChart: React.FC<MergedAccountChartProps<TimeseriesDataType>> 
                 const { payload, label } = props;
                 if (payload && payload.length) {
                     return (
-                        <div className="bg-black bg-opacity-80 text-white p-2 rounded">
+                        <Card className="bg-black bg-opacity-80 text-white p-2 rounded z-50 bg-background text-foreground">
                             <p>Date: {new Date(label).toLocaleDateString()}</p>
                             <p>
                                 {tooltipLabel}: {valuePrefix}
@@ -114,7 +114,7 @@ const MergedAccountChart: React.FC<MergedAccountChartProps<TimeseriesDataType>> 
                                     : Math.abs(payload[0].value).toFixed(2)}
                                 {valueSuffix}
                             </p>
-                        </div>
+                        </Card>
                     );
                 }
                 return null;
@@ -122,9 +122,7 @@ const MergedAccountChart: React.FC<MergedAccountChartProps<TimeseriesDataType>> 
             [isGrowthRate, valuePrefix, valueSuffix, tooltipLabel]
         );
 
-        // const isEmptyData =
-        //     data === undefined || data?.length === 0 || data?.every((item) => item.value === 0);
-        const isEmptyData = false
+        const isEmptyData = data === undefined || data?.length === 0 || data?.every((item) => item.value === 0);
 
         return (
             <Card
@@ -155,18 +153,17 @@ const MergedAccountChart: React.FC<MergedAccountChartProps<TimeseriesDataType>> 
                         </div>
                     ) : (
                         <ResponsiveContainer width="100%" height={chartHeight}>
-                            <AreaChart data={dataset}>
+                            <BarChart data={dataset}>
                                 <Tooltip content={tooltipContent} />
-                                <Area
-                                    type="monotone"
+                                <Bar
                                     dataKey="value"
-                                    stroke={`url(#chartGradient)`}
-                                    fill={`url(#chartGradient)`}
-                                    strokeWidth={3}
+                                    fill={`url(#barGradient)`}
+                                    stroke={gradientColors.startColor}
+                                    strokeWidth={1}
                                 />
                                 <defs>
                                     <linearGradient
-                                        id="chartGradient"
+                                        id="barGradient"
                                         x1="0"
                                         y1="0"
                                         x2="0"
@@ -184,7 +181,7 @@ const MergedAccountChart: React.FC<MergedAccountChartProps<TimeseriesDataType>> 
                                         />
                                     </linearGradient>
                                 </defs>
-                            </AreaChart>
+                            </BarChart>
                         </ResponsiveContainer>
                     )}
                 </CardContent>
@@ -193,6 +190,6 @@ const MergedAccountChart: React.FC<MergedAccountChartProps<TimeseriesDataType>> 
     }
 );
 
-MergedAccountChart.displayName = "MergedAccountChart";
+TimeSeriesBarChart.displayName = "TimeSeriesBarChart";
 
-export { MergedAccountChart };
+export { TimeSeriesBarChart };

@@ -4,7 +4,7 @@ import { useMediaQuery } from "@midday/ui/use-media-query";
 import { ArrowUpRightFromSquare } from "lucide-react";
 import Link from "next/link";
 import React, { useCallback, useMemo } from "react";
-import { Area, AreaChart, ResponsiveContainer, Tooltip } from "recharts";
+import { Bar, BarChart, ResponsiveContainer, Tooltip } from "recharts";
 import { z } from "zod";
 
 // Import the type definitions
@@ -107,7 +107,8 @@ const AccountBalanceGrowthRateChart: React.FC<AccountBalanceGrowthRateChartProps
         return null;
       }, []);
 
-      const isEmptyData = data === undefined || data?.length === 0 || data?.every(item => item.growthRate === 0);
+      // const isEmptyData = data === undefined || data?.length === 0 || data?.every(item => item.growthRate === 0);
+      const isEmptyData = false;
 
       return (
         <Card
@@ -137,14 +138,15 @@ const AccountBalanceGrowthRateChart: React.FC<AccountBalanceGrowthRateChartProps
               </div>
             ) : (
             <ResponsiveContainer width="100%" height={chartHeight}>
-              <AreaChart data={dataset}>
+              <BarChart data={dataset}>
                 <Tooltip content={tooltipContent} />
-                <Area
+                <Bar
                   type="monotone"
                   dataKey="growthRate"
                   stroke={`url(#growthGradient)`}
                   fill={`url(#growthGradient)`}
                   strokeWidth={3}
+                  className="border border-gray-200 rounded-2xl"
                 />
                 <defs>
                   <linearGradient
@@ -166,7 +168,7 @@ const AccountBalanceGrowthRateChart: React.FC<AccountBalanceGrowthRateChartProps
                     />
                   </linearGradient>
                 </defs>
-              </AreaChart>
+              </BarChart>
             </ResponsiveContainer>
             )}
           </CardContent>
