@@ -1,22 +1,19 @@
 import { AccountSummarySection } from "@/components/cash-flow/account-summary-section";
-import { ExpenseTabsSection } from "@/components/cash-flow/expense-tabs-section";
-import { IncomeTabsSection } from "@/components/cash-flow/income-tabs-section";
-import { SpendingTabsSection } from "@/components/cash-flow/spending-tabs-section";
-import { CashflowCharts } from "@/components/charts/cashflow-charts";
 import { DailyExpensesChart } from "@/components/charts/team-insights/daily-expenses-chart/daily-expenses-chart";
+import { ExpenseMetricsChart } from "@/components/charts/team-insights/expense-metrics/expense-metrics-chart";
 import ConnectAccountServerWrapper from "@/components/connect-account-server-wrapper";
+import { DateRangeSelector } from "@/components/date-range-selector";
 import { InboxViewSkeleton } from "@/components/inbox-skeleton";
 import { ContentLayout } from "@/components/panel/content-layout";
 import config from "@/config";
 import { getDefaultDateRange } from "@/config/chart-date-range-default-picker";
 import { Tier } from "@/config/tier";
-import { Cookies } from "@/utils/constants";
 import { getTeamBankAccounts, getUser } from "@midday/supabase/cached-queries";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@midday/ui/tabs";
-import { startOfMonth, startOfYear, subMonths } from "date-fns";
+import { startOfYear } from "date-fns";
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { Suspense } from "react";
+import { searchParamsCache } from "./search-params";
 
 export const metadata: Metadata = {
     title: `Team Insights | ${config.company}`,
@@ -29,23 +26,19 @@ type Props = {
 const defaultValue = getDefaultDateRange("monthly", "expense");
 
 export default async function CashFlowPage({ searchParams }: Props) {
+    const { from, to, currency, page, pageSize } = searchParamsCache.parse(searchParams);
+
     const user = await getUser();
     const accounts = await getTeamBankAccounts();
     const isEmpty = !accounts?.data?.length;
-    const initialPeriod = cookies().has(Cookies.SpendingPeriod)
-        ? JSON.parse(cookies().get(Cookies.SpendingPeriod)?.value ?? "{}")
-        : {
-            id: "this_year",
-            from: startOfYear(new Date()).toISOString(),
-            to: new Date().toISOString(),
-        };
 
     const tier: Tier = user?.data?.tier ?? "free";
 
-    const value = {
-        ...(searchParams.from && { from: searchParams.from }),
-        ...(searchParams.to && { to: searchParams.to }),
-    };
+    const effectiveFrom = from || defaultValue.from;
+    const effectiveTo = to || defaultValue.to;
+    const effectiveCurrency = currency || "USD";
+    const effectivePage = page || "1";
+    const effectivePageSize = pageSize || "100";
 
     return (
         <Suspense fallback={<InboxViewSkeleton ascending />}>
@@ -61,8 +54,6 @@ export default async function CashFlowPage({ searchParams }: Props) {
                             detailedDescription="A breakdown of finances and insights relevant to your team"
                             className="border-none shadow-none"
                         />
-                        {/** Expenses Section */}
-                        {/** Income Section */}
                         <Tabs defaultValue="income" className="px-[2%]">
                             <TabsList className="w-fit">
                                 <TabsTrigger value="income">Income</TabsTrigger>
@@ -75,40 +66,23 @@ export default async function CashFlowPage({ searchParams }: Props) {
                             </TabsContent>
                             <TabsContent value="expense">
                                 <div className="md:min-h-full bg-background/10">
-                                    {/** daily expense */}
-                                    <DailyExpensesChart currency="USD" className="border-none shadow-none"/>
+                                    <DateRangeSelector from={effectiveFrom} to={effectiveTo} />
+                                    <DailyExpensesChart 
+                                        currency={effectiveCurrency} 
+                                        className="border-none shadow-none" 
+                                        from={effectiveFrom}
+                                        to={effectiveTo}
+                                    />
+                                    <ExpenseMetricsChart 
+                                        currency={effectiveCurrency}
+                                        from={effectiveFrom}
+                                        to={effectiveTo}
+                                        pageNumber={effectivePage}
+                                        pageSize={effectivePageSize}
+                                    />
                                 </div>
                             </TabsContent>
                         </Tabs>
-
-                        {/* <div className="mt-4 flex flex-col gap-4">
-                            <ExpenseTabsSection
-                                isEmpty={isEmpty}
-                                accounts={accounts as any}
-                                user={user as any}
-                                tier={tier}
-                                value={value as any}
-                                defaultValue={defaultValue}
-                            />
-                            <IncomeTabsSection
-                                isEmpty={isEmpty}
-                                accounts={accounts as any}
-                                user={user as any}
-                                tier={tier}
-                                value={value as any}
-                                defaultValue={getDefaultDateRange("monthly", "income")}
-                            />
-                            <SpendingTabsSection
-                                isEmpty={isEmpty}
-                                initialPeriod={initialPeriod}
-                                currency={(searchParams.currency as string) ?? "USD"}
-                            />
-                        </div> */}
-                        {/* <CashflowCharts
-                            currency={(searchParams.currency as string) ?? "USD"}
-                            disableAllCharts={true}
-                            tier={tier}
-                        /> */}
                     </div>
                 </ConnectAccountServerWrapper>
             </ContentLayout>
