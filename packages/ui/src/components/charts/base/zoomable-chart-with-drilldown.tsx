@@ -408,7 +408,8 @@ export function ZoomableChartWithDrilldown({
                                         />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid vertical={false} />
+                                <CartesianGrid vertical={false}
+                                    horizontal={false} />
                                 <XAxis
                                     dataKey="date"
                                     tickFormatter={formatXAxis}
