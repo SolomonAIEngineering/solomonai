@@ -2,7 +2,7 @@ import { useAssistant } from "@ai-sdk/react";
 import { AssistantRuntimeProvider } from "@assistant-ui/react";
 import { useVercelUseAssistantRuntime } from "@assistant-ui/react-ai-sdk";
 import { Meta, StoryFn } from "@storybook/react";
-import React from 'react';
+import React from "react";
 import { JSX } from "react/jsx-runtime";
 
 import {
@@ -49,8 +49,8 @@ export default {
     },
     chartType: {
       control: {
-        type: 'select',
-        options: ['area', 'bar', 'line'],
+        type: "select",
+        options: ["area", "bar", "line"],
       },
     },
   },
@@ -114,15 +114,18 @@ BarChart.args = {
   chartType: "bar",
 };
 
-
-export const InteractiveFeatures: StoryFn<ZoomableChartWithDrilldownProps> = (args: any) => {
+export const InteractiveFeatures: StoryFn<ZoomableChartWithDrilldownProps> = (
+  args: any,
+) => {
   const [zoomedData, setZoomedData] = React.useState<any[]>(simulateData());
   const [drilldownInfo, setDrilldownInfo] = React.useState<string | null>(null);
 
   const handleDrilldown = (start: string, end: string) => {
     const newData = simulateData(start, end);
     setZoomedData(newData);
-    setDrilldownInfo(`Drilled down from ${new Date(start).toLocaleString()} to ${new Date(end).toLocaleString()}`);
+    setDrilldownInfo(
+      `Drilled down from ${new Date(start).toLocaleString()} to ${new Date(end).toLocaleString()}`,
+    );
   };
 
   return (
@@ -131,19 +134,19 @@ export const InteractiveFeatures: StoryFn<ZoomableChartWithDrilldownProps> = (ar
         {...args}
         data={zoomedData}
         onDrilldown={handleDrilldown}
-        onShare={() => alert('Sharing functionality would be implemented here')}
-        onExportToModel={() => alert('Export to model functionality would be implemented here')}
+        onShare={() => alert("Sharing functionality would be implemented here")}
+        onExportToModel={() =>
+          alert("Export to model functionality would be implemented here")
+        }
       />
       {drilldownInfo && (
-        <div className="mt-4 p-3 bg-gray-100 rounded-md">
-          {drilldownInfo}
-        </div>
+        <div className="mt-4 p-3 bg-gray-100 rounded-md">{drilldownInfo}</div>
       )}
     </div>
   );
 };
 InteractiveFeatures.args = {
   ...Default.args,
-  title: 'Interactive ZoomableChartWithDrilldown',
-  description: 'Demonstrates drilldown, share, and export functionalities',
+  title: "Interactive ZoomableChartWithDrilldown",
+  description: "Demonstrates drilldown, share, and export functionalities",
 };

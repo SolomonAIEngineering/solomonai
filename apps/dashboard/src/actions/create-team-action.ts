@@ -11,29 +11,29 @@ import { createTeamSchema } from "./schema";
 
 /**
  * Server-side action to create a new team.
- * 
+ *
  * This action is responsible for creating a new team, updating the user's team association,
  * and handling the necessary data revalidation and redirection.
- * 
+ *
  * @remarks
  * This action is protected by authentication and uses a schema for input validation.
  * It also includes event tracking functionality.
- * 
+ *
  * @param options - The options for creating a team
  * @param options.parsedInput - The parsed and validated input from the client
  * @param options.parsedInput.name - The name of the team to be created
  * @param options.parsedInput.redirectTo - Optional URL to redirect to after team creation
  * @param options.ctx - The context object containing the Supabase client
  * @param options.ctx.supabase - The authenticated Supabase client instance
- * 
+ *
  * @returns A Promise that resolves to the ID of the newly created team
- * 
+ *
  * @throws Error if the user already has a team and multiple team support is disabled
  * @throws Error if updating the user data fails
- * 
+ *
  * @example
  * ```typescript
- * const teamId = await createTeamAction({ 
+ * const teamId = await createTeamAction({
  *   parsedInput: { name: "My New Team", redirectTo: "/dashboard" },
  *   ctx: { supabase: supabaseClient }
  * });
@@ -54,8 +54,14 @@ export const createTeamAction = authActionClient
       // Fetch existing teams for the user
       const existingTeams = await getTeams();
       // If the user already has a team, throw an error
-      if (existingTeams && existingTeams.data && existingTeams.data.length >= 1) {
-        throw new Error("You already have a team. You cannot create another one.");
+      if (
+        existingTeams &&
+        existingTeams.data &&
+        existingTeams.data.length >= 1
+      ) {
+        throw new Error(
+          "You already have a team. You cannot create another one.",
+        );
       }
     }
 

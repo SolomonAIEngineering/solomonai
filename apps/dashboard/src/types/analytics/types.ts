@@ -22,4 +22,8 @@ type AccountBalanceGrowthRateDataType = z.infer<
 >;
 type AccountBalanceDataType = z.infer<typeof AccountBalanceDataType>;
 
-export { AccountBalanceDataType, AccountBalanceGrowthRateDataType, TimeseriesDataType };
+export {
+  AccountBalanceDataType,
+  AccountBalanceGrowthRateDataType,
+  TimeseriesDataType,
+};

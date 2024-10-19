@@ -132,13 +132,13 @@ export const dashboardEnvironment = createEnv({
     NEXT_PUBLIC_AUTH_PROVIDERS: z
       .preprocess(
         (val) => (typeof val === "string" ? val.split(",") : val),
-        z.array(authProviderEnum)
+        z.array(authProviderEnum),
       )
       .default(["google", "slack", "github", "otp"]),
     NEXT_PUBLIC_FINANCIAL_PROVIDERS: z
       .preprocess(
         (val) => (typeof val === "string" ? val.split(",") : val),
-        z.array(financialProviderEnum)
+        z.array(financialProviderEnum),
       )
       .default(["plaid", "teller", "gocardless"]),
     NEXT_PUBLIC_ENABLE_PRICING: z
@@ -151,7 +151,7 @@ export const dashboardEnvironment = createEnv({
     NEXT_PUBLIC_ANALYTICS_MODULES: z
       .preprocess(
         (val) => (typeof val === "string" ? val.split(",") : val),
-        z.array(analyticsModulesEnum)
+        z.array(analyticsModulesEnum),
       )
       .default(["merchant", "location", "realtime"]),
     NEXT_PUBLIC_ENABLE_DARK_MODE: z.coerce.boolean().default(true),
@@ -167,21 +167,21 @@ export const dashboardEnvironment = createEnv({
     NEXT_PUBLIC_SMART_GOAL_FEATURES: z
       .preprocess(
         (val) => (typeof val === "string" ? val.split(",") : val),
-        z.array(smartGoalFeaturesEnum)
+        z.array(smartGoalFeaturesEnum),
       )
       .default(["milestones", "forecasts", "notes", "progress_tracking"]),
     NEXT_PUBLIC_ENABLE_MILESTONES: z.coerce.boolean().default(true),
     NEXT_PUBLIC_MILESTONE_FEATURES: z
       .preprocess(
         (val) => (typeof val === "string" ? val.split(",") : val),
-        z.array(milestoneFeaturesEnum)
+        z.array(milestoneFeaturesEnum),
       )
       .default(["completion_tracking", "budget_integration"]),
     NEXT_PUBLIC_ENABLE_FORECASTS: z.coerce.boolean().default(true),
     NEXT_PUBLIC_FORECAST_FEATURES: z
       .preprocess(
         (val) => (typeof val === "string" ? val.split(",") : val),
-        z.array(forecastFeaturesEnum)
+        z.array(forecastFeaturesEnum),
       )
       .default(["revenue", "expenses", "cash_flow"]),
     NEXT_PUBLIC_ENABLE_BETA_FEATURES: z

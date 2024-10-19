@@ -131,45 +131,46 @@ const AccountBalanceGrowthRateChart: React.FC<AccountBalanceGrowthRateChartProps
           </CardHeader>
           <CardContent>
             {isEmptyData ? (
-              <div className="text-2xl font-bold text-center text-gray-500 mt-4 flex items-center justify-center bg-background/20 rounded-2xl border" style={
-                { minHeight: chartHeight }
-              }>
+              <div
+                className="text-2xl font-bold text-center text-gray-500 mt-4 flex items-center justify-center bg-background/20 rounded-2xl border"
+                style={{ minHeight: chartHeight }}
+              >
                 No data available. Your data may still be syncing.
               </div>
             ) : (
-            <ResponsiveContainer width="100%" height={chartHeight}>
-              <BarChart data={dataset}>
-                <Tooltip content={tooltipContent} />
-                <Bar
-                  type="monotone"
-                  dataKey="growthRate"
-                  stroke={`url(#growthGradient)`}
-                  fill={`url(#growthGradient)`}
-                  strokeWidth={3}
-                  className="border border-gray-200 rounded-2xl"
-                />
-                <defs>
-                  <linearGradient
-                    id="growthGradient"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop
-                      offset="0%"
-                      stopColor={gradientColors.startColor}
-                      stopOpacity={0.8}
-                    />
-                    <stop
-                      offset="100%"
-                      stopColor={gradientColors.endColor}
-                      stopOpacity={0.1}
-                    />
-                  </linearGradient>
-                </defs>
-              </BarChart>
-            </ResponsiveContainer>
+              <ResponsiveContainer width="100%" height={chartHeight}>
+                <BarChart data={dataset}>
+                  <Tooltip content={tooltipContent} />
+                  <Bar
+                    type="monotone"
+                    dataKey="growthRate"
+                    stroke={`url(#growthGradient)`}
+                    fill={`url(#growthGradient)`}
+                    strokeWidth={3}
+                    className="border border-gray-200 rounded-2xl"
+                  />
+                  <defs>
+                    <linearGradient
+                      id="growthGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop
+                        offset="0%"
+                        stopColor={gradientColors.startColor}
+                        stopOpacity={0.8}
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor={gradientColors.endColor}
+                        stopOpacity={0.1}
+                      />
+                    </linearGradient>
+                  </defs>
+                </BarChart>
+              </ResponsiveContainer>
             )}
           </CardContent>
         </Card>

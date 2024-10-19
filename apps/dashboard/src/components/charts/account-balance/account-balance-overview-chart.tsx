@@ -87,14 +87,20 @@ const AccountBalanceOverviewChart: React.FC<AccountBalanceOverviewChartProps> =
           return (
             <div className="bg-black bg-opacity-80 text-white p-2 rounded">
               <p>Date: {new Date(label).toLocaleDateString()}</p>
-              <p>Balance: {(payload[0].value >= 0 ? '+' : '-')}${Math.abs(payload[0].value).toFixed(2)}</p>
+              <p>
+                Balance: {payload[0].value >= 0 ? "+" : "-"}$
+                {Math.abs(payload[0].value).toFixed(2)}
+              </p>
             </div>
           );
         }
         return null;
       }, []);
 
-      const isEmptyData = data === undefined || data?.length === 0 || data?.every(item => item.balance === 0);
+      const isEmptyData =
+        data === undefined ||
+        data?.length === 0 ||
+        data?.every((item) => item.balance === 0);
 
       return (
         <Card
@@ -117,9 +123,10 @@ const AccountBalanceOverviewChart: React.FC<AccountBalanceOverviewChartProps> =
           </CardHeader>
           <CardContent>
             {isEmptyData ? (
-              <div className="text-2xl font-bold text-center text-gray-500 mt-4 flex items-center justify-center bg-background/20 rounded-2xl border" style={
-                { minHeight: chartHeight }
-              }>
+              <div
+                className="text-2xl font-bold text-center text-gray-500 mt-4 flex items-center justify-center bg-background/20 rounded-2xl border"
+                style={{ minHeight: chartHeight }}
+              >
                 No data available. Your data may still be syncing.
               </div>
             ) : (

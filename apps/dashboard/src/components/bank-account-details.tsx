@@ -60,7 +60,6 @@ export function BankAccountDetails({
   transactionsLoading,
   userId,
 }: BankAccountDetailsProps): React.ReactElement {
-
   /**
    * Memoized link to view more details about the account.
    * @type {string}

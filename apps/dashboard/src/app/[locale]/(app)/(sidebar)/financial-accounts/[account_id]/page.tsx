@@ -33,7 +33,7 @@ async function LoadBankAccountData({
       pageNumber: "1",
       pageSize: "100",
     }),
-    getUser()
+    getUser(),
   ]);
 
   const userId = user?.data?.id;
@@ -47,7 +47,11 @@ async function LoadBankAccountData({
           <CardDescription>Connected bank account</CardDescription>
         </CardHeader>
         <CardContent className="p-[2%]">
-          <AccountBalanceSummaryCharts historicalAccountBalance={accountBalance.accountBalanceHistory ?? []} />
+          <AccountBalanceSummaryCharts
+            historicalAccountBalance={
+              accountBalance.accountBalanceHistory ?? []
+            }
+          />
         </CardContent>
       </Card>
     );
