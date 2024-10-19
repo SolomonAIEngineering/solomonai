@@ -60,8 +60,6 @@ export function BankAccountDetails({
   transactionsLoading,
   userId,
 }: BankAccountDetailsProps): React.ReactElement {
-  const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(100);
 
   /**
    * Memoized link to view more details about the account.
@@ -79,10 +77,10 @@ export function BankAccountDetails({
   const accountBalanceReq: GetAccountBalanceHistoryRequest = useMemo(
     () => ({
       plaidAccountId: bankAccount.account_id,
-      pageNumber: page.toString(),
-      pageSize: pageSize.toString(),
+      pageNumber: "1",
+      pageSize: "100",
     }),
-    [bankAccount.account_id, page, pageSize],
+    [bankAccount.account_id],
   );
 
   /**
