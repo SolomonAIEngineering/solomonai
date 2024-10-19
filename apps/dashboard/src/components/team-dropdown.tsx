@@ -70,7 +70,7 @@ export function TeamDropdown({ selectedTeamId: initialId, teams }) {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-sm shadow-lg overflow-hidden z-50"
+              className="border absolute left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-sm shadow-lg overflow-hidden z-50"
             >
               {otherTeams.map(({ team }, index) => (
                 <motion.div
@@ -81,7 +81,7 @@ export function TeamDropdown({ selectedTeamId: initialId, teams }) {
                 >
                   {team.id === "add" ? (
                     <Button
-                      className="w-full h-[32px] flex items-center justify-start px-2"
+                      className="w-full h-[32px] flex items-center justify-start px-2 shadow-none"
                       variant="ghost"
                       onClick={() => {
                         onOpenChange(true);

@@ -21,14 +21,18 @@ import { Loader2 } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
+import { useState } from "react";
 
 type Props = {
   onOpenChange: (isOpen: boolean) => void;
 };
 
 export function CreateTeamModal({ onOpenChange }: Props) {
+  const [error, setError] = useState<string | null>(null);
+
   const createTeam = useAction(createTeamAction, {
     onSuccess: () => onOpenChange(false),
+    onError: (error) => setError(error.message),
   });
 
   const form = useForm<z.infer<typeof createTeamSchema>>({
@@ -52,6 +56,8 @@ export function CreateTeamModal({ onOpenChange }: Props) {
             For example, you can use the name of your company or department.
           </DialogDescription>
         </DialogHeader>
+
+        {error && <p className="text-red-500 mb-4">{error}</p>}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
