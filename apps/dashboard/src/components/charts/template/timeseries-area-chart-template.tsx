@@ -106,7 +106,7 @@ const TimeSeriesAreaChart: React.FC<TimeSeriesAreaChartProps<TimeseriesDataType>
                 if (payload && payload.length) {
                     return (
                         <div className="bg-black bg-opacity-80 text-white p-2 rounded">
-                            <p>Date: {new Date(label).toLocaleDateString()}</p>
+                            <p>Date: {payload[0].payload.date}</p>
                             <p>
                                 {tooltipLabel}: {valuePrefix}
                                 {isGrowthRate

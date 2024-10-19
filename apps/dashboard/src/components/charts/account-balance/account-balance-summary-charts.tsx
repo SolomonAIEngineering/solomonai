@@ -36,7 +36,7 @@ const AccountBalanceSummaryCharts: React.FC<
                     ? (currentBalance - previousBalance) / previousBalance
                     : 0;
             return {
-                date: balance.time?.toISOString() ?? "",
+                date: balance.time ? new Date(balance.time).toDateString() : new Date().toDateString(),
                 value: growthRate,
             };
         });
@@ -44,14 +44,16 @@ const AccountBalanceSummaryCharts: React.FC<
     // transform the account balance history data to the format expected by the chart
     const balanceData: Array<AccountBalanceDataType> =
         historicalAccountBalance.map((balance) => ({
-            date: balance.time?.toISOString() ?? "",
+            date: balance.time ? new Date(balance.time).toDateString() : new Date().toDateString(),
             balance: balance.balance ?? 0,
         }));
 
     const timeSeriesData: Array<TimeseriesDataType> = historicalAccountBalance.map((balance) => ({
-        date: balance.time?.toISOString() ?? "",
+        date: balance.time ? new Date(balance.time).toDateString() : new Date().toDateString(),
         value: balance.balance ?? 0,
     }));
+
+    console.log("timeSeriesData", timeSeriesData);
 
     return (
         <>
@@ -68,9 +70,9 @@ const AccountBalanceSummaryCharts: React.FC<
                     <TimeSeriesAreaChart
                         title="Account Balance Overview Over Time"
                         data={timeSeriesData}
-                        dataKey="growthRate"
-                        valueSuffix="%"
-                        tooltipLabel="Growth Rate"
+                        dataKey="value"
+                        valueSuffix=""
+                        tooltipLabel="Balance"
                         chartHeights={{ mediumScreen: 600, smallScreen: 500, default: 400 }}
                         gradientColors={{ startColor: "#333", endColor: "#666" }}
                         className="border-none shadow-none"
