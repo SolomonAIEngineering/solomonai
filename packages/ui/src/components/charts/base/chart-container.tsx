@@ -1,9 +1,9 @@
-import { CalendarDatePicker } from "../../calendar/index";
-import { AssistantModal } from "../../assistant-modal";
 import { BarChartMultiDataPoint, ChartDataPoint } from "@/types/chart";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import React from "react";
 import { ResponsiveContainer } from "recharts";
+import { AssistantModal } from "../../assistant-modal";
+import { CalendarDatePicker } from "../../calendar/index";
 
 import { Button } from "../../button";
 
@@ -36,7 +36,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
 }) => {
   const disabledClassName = disabled ? "skeleton-box opacity-15" : "";
   return (
-    <div className={`flex flex-col gap-2`}>
+    <div className={`flex flex-col gap-2 w-full`}>
       <div className="flex items-center gap-2">
         <CalendarDatePicker
           date={{ from: earliestDate, to: latestDate }}
@@ -53,7 +53,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
       <ResponsiveContainer
         width="100%"
         height={height}
-        className={`flex flex-col gap-2 ${disabledClassName}`}
+        className={`flex flex-col gap-2 h-full rounded-2xl ${disabledClassName} `}
       >
         {children}
       </ResponsiveContainer>
