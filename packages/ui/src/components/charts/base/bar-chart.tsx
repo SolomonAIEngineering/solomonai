@@ -216,7 +216,7 @@ export const BarChart: React.FC<BarChartProps> = ({
           </div>
         </div>
       </ChartWrapper>
-      <ChartContainer
+      <ChartContainer<any>
         data={data}
         dataSet={dataSet}
         setDataSet={setDataSet}
