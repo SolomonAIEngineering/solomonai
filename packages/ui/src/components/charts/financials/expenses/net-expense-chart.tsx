@@ -1,6 +1,6 @@
 import { ExpenseMetrics } from "client-typescript-sdk";
 import { ArrowRightIcon } from "lucide-react";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { FinancialExpenseAndIncomeMetricsConverter } from "../../../../lib/converters/expense-and-income-metrics-converter";
 import { FinancialDataGenerator } from "../../../../lib/random/financial-data-generator";
 import { cn } from "../../../../utils/cn";
@@ -15,18 +15,23 @@ import {
   TableHeader,
   TableRow,
 } from "../../../table";
-import { BarChart, BarChartProps } from "../../base/bar-chart";
+import { AnalyticsChart } from "../../base/analytics-chart";
+import { AreaChart } from "../../base/area-chart";
 import { CategoryChart } from "../categories/category-horizontal-chart";
 
 export interface NetExpenseChartProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    Omit<BarChartProps, "data"> {
+  extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
   title: string;
   viewMoreHref?: string;
   price: number;
   priceChange: number;
   expenseMetrics: ExpenseMetrics[];
+  currency: string;
+  locale?: string;
+  enableAssistantMode?: boolean;
+  enableComparison?: boolean;
+  disabled?: boolean;
 }
 
 export const NetExpenseChart: React.FC<NetExpenseChartProps> = ({
@@ -39,41 +44,44 @@ export const NetExpenseChart: React.FC<NetExpenseChartProps> = ({
   price,
   priceChange,
   expenseMetrics,
+  currency,
+  locale,
   ...rest
 }) => {
   const rootClassName = cn(
-    "w-full bg-background text-foreground p-6",
+    "w-full bg-background text-foreground p-6 h-full border-none shadow-none",
     className,
     disabled && "opacity-50 pointer-events-none",
   );
 
   // generate the net Expense data if disabled
-  if (disabled) {
-    expenseMetrics =
-      FinancialDataGenerator.generateExpenseMetricsAcrossManyYears(2022, 2024);
-  }
+  const data = useMemo(() => {
+    if (disabled) {
+      return FinancialDataGenerator.generateExpenseMetricsAcrossManyYears(2022, 2024);
+    }
+    return expenseMetrics;
+  }, [disabled, expenseMetrics]);
 
   const netExpenseData = useMemo(() => {
     return FinancialExpenseAndIncomeMetricsConverter.convertDataToChartDataPoints(
-      expenseMetrics,
+      data,
       "expense",
     );
-  }, [expenseMetrics]);
-  0;
+  }, [data]);
 
   const yearlyTotalExpense = useMemo(() => {
     return FinancialExpenseAndIncomeMetricsConverter.computeTotalExpenseByYear(
-      expenseMetrics,
+      data,
     );
-  }, [expenseMetrics]);
+  }, [data]);
 
   const yearlyAverageMonthlyExpense = useMemo(() => {
     return FinancialExpenseAndIncomeMetricsConverter.computeAverageMonthlyExpenseByYear(
-      expenseMetrics,
+      data,
     );
-  }, [expenseMetrics]);
+  }, [data]);
 
-  const hasData = expenseMetrics.length > 0;
+  const hasData = data.length > 0;
 
   const years = useMemo(() => {
     return Object.keys(yearlyTotalExpense).sort(
@@ -83,17 +91,25 @@ export const NetExpenseChart: React.FC<NetExpenseChartProps> = ({
 
   const monthlyExpense = useMemo(() => {
     return FinancialExpenseAndIncomeMetricsConverter.computeMonthlyExpense(
-      expenseMetrics,
+      data,
     );
-  }, [expenseMetrics]);
+  }, [data]);
 
   const expenseByCategory = useMemo(() => {
-    const categories =
-      FinancialExpenseAndIncomeMetricsConverter.computeExpenseByCategory(
-        expenseMetrics,
-      );
-    return categories;
-  }, [expenseMetrics]);
+    return FinancialExpenseAndIncomeMetricsConverter.computeExpenseByCategory(
+      data,
+    );
+  }, [data]);
+
+  const chartData = useMemo(() => {
+    return netExpenseData.map((item) => ({
+      date: item.date,
+      expense: Number(item.value)
+    }));
+  }, [netExpenseData]);
+
+  // get the data keys
+  const dataKeys = ["expense"];
 
   return (
     <Card className={rootClassName} {...rest}>
@@ -128,7 +144,7 @@ export const NetExpenseChart: React.FC<NetExpenseChartProps> = ({
                 View More <ArrowRightIcon className="ml-1 h-4 w-4" />
               </button>
             </SheetTrigger>
-            <SheetContent className="w-full md:min-w-[70%] scrollbar-hide overflow-y-auto">
+            <SheetContent className="w-full md:min-w-[70%] scrollbar-hide overflow-y-auto bg-background text-foreground">
               <h2 className="text-lg font-semibold mb-4">
                 Net Expense details
               </h2>
@@ -136,15 +152,7 @@ export const NetExpenseChart: React.FC<NetExpenseChartProps> = ({
                 Expense this month
               </h3>
               <div>
-                <BarChart
-                  currency="USD"
-                  data={netExpenseData}
-                  height={300}
-                  locale="en-US"
-                  enableAssistantMode={false}
-                  enableComparison={false}
-                  disabled={disabled}
-                />
+                <AreaChart currency={"USD"} data={netExpenseData} />
               </div>
               <div className="mt-6">
                 <h3 className="text-md font-semibold mb-2">Key Metrics</h3>
@@ -183,14 +191,7 @@ export const NetExpenseChart: React.FC<NetExpenseChartProps> = ({
                 </Table>
               </div>
               <div className="mt-6 border-t flex flex-col gap-6">
-                <div className="mt-6">
-                  <CategoryChart
-                    data={expenseByCategory}
-                    title={"Expense by Category"}
-                    description={"Expense by Category over time"}
-                  />
-                </div>
-                <Card className="flex flex-col gap-3 p-[2%] border-none">
+                <Card className="flex flex-col gap-3 p-[2%] border-none shadow-none">
                   {monthlyExpense.map(({ month, year, totalExpense }) => (
                     <div key={`${month}-${year}`}>
                       <div className="flex flex-1 items-center justify-between">
@@ -220,13 +221,18 @@ export const NetExpenseChart: React.FC<NetExpenseChartProps> = ({
       </div>
       <div className="mt-6">
         {hasData ? (
-          <BarChart
-            currency="USD"
-            data={netExpenseData}
+          <AnalyticsChart
+            chartData={chartData}
+            title="Net Expense Over Time"
+            description={`Net expense over time in ${currency}`}
+            dataKeys={dataKeys as any}
+            colors={["#333"]}
+            trendKey="expense"
+            chartType="bar"
+            currency={currency}
             height={300}
-            locale="en-US"
+            locale={locale}
             enableAssistantMode={enableAssistantMode}
-            enableComparison={enableComparison}
             disabled={disabled}
           />
         ) : (
