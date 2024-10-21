@@ -178,7 +178,7 @@ export const AreaChart: React.FC<AreaChartProps> = ({
     }, [data]);
 
     return (
-        <ChartContainer
+        <ChartContainer<any>
             data={data}
             dataSet={dataSet}
             setDataSet={setDataSet}

@@ -57,8 +57,8 @@ const payloads = generatePayloadArray({
   maxValue: 500,
 });
 
-const Template: StoryFn<ChartContainerProps> = (
-  args: JSX.IntrinsicAttributes & ChartContainerProps,
+const Template: StoryFn<ChartContainerProps<any>> = (
+  args: JSX.IntrinsicAttributes & ChartContainerProps<any>,
 ) => (
   <div className="w-[900px]">
     <ChartContainer {...args}>
