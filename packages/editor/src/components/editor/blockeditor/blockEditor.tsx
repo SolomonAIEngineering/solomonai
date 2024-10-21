@@ -1,12 +1,12 @@
 "use client";
 
-import { RefObject, useMemo, useRef } from "react";
 import { LinkMenu } from "@/components/editor/menus";
 import {
   useBlockEditor,
   UseBlockEditorProps,
 } from "@/hooks/editor/useBlockEditor";
 import { EditorContent, PureEditorContent } from "@tiptap/react";
+import { RefObject, useMemo, useRef } from "react";
 
 import "@/styles/index.css";
 

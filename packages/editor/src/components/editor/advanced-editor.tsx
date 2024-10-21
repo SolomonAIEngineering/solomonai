@@ -2,6 +2,7 @@ import { TiptapCollabProvider } from "@hocuspocus/provider";
 
 import "iframe-resizer/js/iframeResizer.contentWindow";
 
+import { BlockEditor } from "@/components";
 import {
   useCallback,
   useEffect,
@@ -9,10 +10,10 @@ import {
   useMemo,
   useState,
 } from "react";
-import { BlockEditor } from "@/components";
 import * as Y from "yjs";
 
 import "@/styles/index.css";
+import { cn } from "@midday/ui/cn";
 
 export interface AiState {
   isAiLoading: boolean;
@@ -98,7 +99,7 @@ export const AdvancedEditor: React.FC<EditorProps> = ({
   }, [setProvider, collabToken, ydoc]);
 
   return (
-    <div className={className}>
+    <div className={cn("md:min-h-[700px]", className)}>
       <BlockEditor
         aiToken={aiToken as string}
         hasCollab={tiptapCollabEnabled}
