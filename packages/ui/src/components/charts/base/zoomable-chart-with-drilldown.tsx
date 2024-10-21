@@ -374,27 +374,33 @@ export function ZoomableChartWithDrilldown({
           >
             <div className="flex justify-between my-2 sm:mb-4">
               <div>
-                <Button
-                  variant="outline"
-                  onClick={handleDrilldown}
-                  className="text-xs sm:text-sm mr-2"
-                >
-                  Drilldown
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleShare}
-                  className="text-xs sm:text-sm mr-2"
-                >
-                  Share
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleExportToModel}
-                  className="text-xs sm:text-sm"
-                >
-                  Export to Model
-                </Button>
+                {onDrilldown && (
+                  <Button
+                    variant="outline"
+                    onClick={handleDrilldown}
+                    className="text-xs sm:text-sm mr-2"
+                  >
+                    Drilldown
+                  </Button>
+                )}
+                {onShare && (
+                  <Button
+                    variant="outline"
+                    onClick={handleShare}
+                    className="text-xs sm:text-sm mr-2"
+                  >
+                    Share
+                  </Button>
+                )}
+                {onExportToModel && (
+                  <Button
+                    variant="outline"
+                    onClick={handleExportToModel}
+                    className="text-xs sm:text-sm"
+                  >
+                    Export to Model
+                  </Button>
+                )}
               </div>
               <Button
                 variant="outline"
