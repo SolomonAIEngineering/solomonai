@@ -5,10 +5,10 @@ import {
   DollarSign,
   FileAxis3D,
   FileText,
-  GitGraphIcon,
   InboxIcon,
   LayoutGrid, Settings,
   TableCellsMergeIcon
+  SquareChartGantt
 } from "lucide-react";
 
 /**
@@ -68,7 +68,7 @@ const menuConfig: Group[] = [
       {
         href: "/team-insights",
         label: "Team Insights",
-        icon: GitGraphIcon,
+        icon: SquareChartGantt,
         submenus: [
           {
             href: "/team-insights/income",
