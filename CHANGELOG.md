@@ -1,3 +1,24 @@
+# [0.43.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.42.0...v0.43.0) (2024-10-22)
+
+
+### Features
+
+* (Stress Testing - V0) enhance support for the apps platform on solomon ai ([#58](https://github.com/SolomonAIEngineering/solomonai/issues/58)) ([70205e5](https://github.com/SolomonAIEngineering/solomonai/commit/70205e507a6a2abefbfe4b0de578fda430e1ac49))
+
+# [0.42.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.41.0...v0.42.0) (2024-10-22)
+
+
+### Features
+
+* checkpoint ([aa5dc21](https://github.com/SolomonAIEngineering/solomonai/commit/aa5dc21147f69fcdf94c0584da262e4751e38e59))
+
+# [0.41.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.40.0...v0.41.0) (2024-10-22)
+
+
+### Features
+
+* wip ([ee07a4a](https://github.com/SolomonAIEngineering/solomonai/commit/ee07a4aea3f510b142963902fbf84e8c2e253559))
+
 # [0.40.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.39.0...v0.40.0) (2024-10-22)
 
 
