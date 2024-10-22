@@ -5,6 +5,7 @@ import {
   DollarSign,
   FileAxis3D,
   FileText,
+  GitGraphIcon,
   InboxIcon,
   LayoutGrid, Settings,
   TableCellsMergeIcon
@@ -64,6 +65,24 @@ const menuConfig: Group[] = [
         submenus: [],
         active: false,
       },
+      {
+        href: "/team-insights",
+        label: "Team Insights",
+        icon: GitGraphIcon,
+        submenus: [
+          {
+            href: "/team-insights/income",
+            label: "Income",
+            active: false,
+          },
+          {
+            href: "/team-insights/expense",
+            label: "Expense",
+            active: false,
+          },
+        ],
+        active: false,
+      }
     ],
   },
   {
@@ -254,7 +273,7 @@ const menuConfig: Group[] = [
  */
 export function getMenuList(
   pathname: string,
-  config: Group[] = menuConfig
+  config: Group[] = menuConfig,
 ): Group[] {
   return config.map((group) => ({
     ...group,

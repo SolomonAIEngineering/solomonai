@@ -61,11 +61,11 @@ export class PlaidApi {
     this.#clientSecret = params.envs.PLAID_SECRET;
     this.#r2 = params.r2;
 
-    console.log('Plaid client ID:', this.#clientId);
-    console.log('Plaid secret length:', this.#clientSecret.length);
+    console.log("Plaid client ID:", this.#clientId);
+    console.log("Plaid secret length:", this.#clientSecret.length);
 
     this.#countryCodes = PLAID_COUNTRIES as CountryCode[];
-    console.log('Country codes:', this.#countryCodes);
+    console.log("Country codes:", this.#countryCodes);
 
     const configuration = new Configuration({
       basePath:
@@ -88,7 +88,7 @@ export class PlaidApi {
   async getHealthCheck(): Promise<boolean> {
     try {
       const response = await fetch(
-        "https://status.plaid.com/api/v2/status.json"
+        "https://status.plaid.com/api/v2/status.json",
       );
 
       const data = (await response.json()) as GetStatusResponse;
@@ -173,42 +173,47 @@ export class PlaidApi {
     accessToken,
     accountId,
     latest,
-  }: GetTransactionsRequest): Promise<GetTransactionsResponse | undefined> {
+    syncCursor,
+    maxCalls = 15,
+  }: GetTransactionsRequest): Promise<GetTransactionsResponse> {
     let added: Array<Transaction> = [];
-    let cursor = undefined;
+    let cursor = syncCursor;
     let hasMore = true;
+    let callCount = 0;
+
     try {
-      if (latest) {
+      while (hasMore && callCount < maxCalls) {
         const { data } = await this.#client.transactionsSync({
           access_token: accessToken,
-          count: 100,
+          cursor,
         });
 
         added = added.concat(data.added);
-      } else {
-        while (hasMore) {
-          const { data } = await this.#client.transactionsSync({
-            access_token: accessToken,
-            cursor,
-          });
-
-          added = added.concat(data.added);
-          hasMore = data.has_more;
-          cursor = data.next_cursor;
-        }
+        hasMore = data.has_more;
+        cursor = data.next_cursor;
+        callCount++;
       }
 
       // NOTE: Plaid transactions for all accounts
       // we need to filter based on the provided accountId and pending status
-      return added
+      const newlyAddedTxns = added
         .filter((transaction) => transaction.account_id === accountId)
         .filter((transaction) => !transaction.pending);
+
+      return {
+        added: newlyAddedTxns,
+        cursor: cursor ?? "",
+        hasMore: hasMore,
+      };
     } catch (error) {
       const parsedError = isError(error);
 
       if (parsedError) {
         throw new ProviderError(parsedError);
       }
+
+      // If it's not a known error type, throw a generic error
+      throw new Error("An unknown error occurred while fetching transactions");
     }
   }
 
@@ -240,14 +245,17 @@ export class PlaidApi {
       },
     };
 
-    console.log('Link token create payload:', JSON.stringify(payload, null, 2));
+    console.log("Link token create payload:", JSON.stringify(payload, null, 2));
 
     try {
       const response = await this.#client.linkTokenCreate(payload);
-      console.log('Link token created successfully');
+      console.log("Link token created successfully");
       return response;
     } catch (error: unknown) {
-      console.error('Error creating link token:', error);
+      console.error(
+        "Error creating link token:",
+        JSON.stringify(error, null, 2),
+      );
       throw error;
     }
   }
@@ -322,7 +330,7 @@ export class PlaidApi {
             })
             .then(({ data }) => {
               return data.institutions;
-            })
+            }),
         ),
     });
   }
@@ -363,7 +371,7 @@ export class PlaidApi {
           accountIdToStatements.set(statement.statement_id, statement);
           statementIdToAccountId.set(
             statement.statement_id,
-            account.account_id
+            account.account_id,
           );
         });
 
@@ -378,7 +386,7 @@ export class PlaidApi {
           statement_id: statement.statement_id,
           month: statement.month.toString(),
           year: statement.year.toString(),
-        })
+        }),
       );
 
       return {

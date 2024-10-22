@@ -1,3 +1,152 @@
+# [0.40.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.39.0...v0.40.0) (2024-10-22)
+
+
+### Features
+
+* wip ([cc02380](https://github.com/SolomonAIEngineering/solomonai/commit/cc023806340acafea5eb24437fe9f4de3fefa268))
+
+# [0.39.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.38.1...v0.39.0) (2024-10-22)
+
+
+### Features
+
+* wip ([b534eb3](https://github.com/SolomonAIEngineering/solomonai/commit/b534eb351a3748e787f46f8e17ea04ef9425cca3))
+
+## [0.38.1](https://github.com/SolomonAIEngineering/solomonai/compare/v0.38.0...v0.38.1) (2024-10-22)
+
+
+### Bug Fixes
+
+* add general fixes ([#66](https://github.com/SolomonAIEngineering/solomonai/issues/66)) ([1ff2daf](https://github.com/SolomonAIEngineering/solomonai/commit/1ff2dafa44b9feca2c9854c4320253f50e0cf951))
+
+# [0.38.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.37.0...v0.38.0) (2024-10-19)
+
+
+### Features
+
+* wip ([#65](https://github.com/SolomonAIEngineering/solomonai/issues/65)) ([5f5251e](https://github.com/SolomonAIEngineering/solomonai/commit/5f5251e9224d205c45d861513d5918f717ac43b8))
+
+# [0.37.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.36.0...v0.37.0) (2024-10-19)
+
+
+### Features
+
+* add bank account historical balance at the account level ([#63](https://github.com/SolomonAIEngineering/solomonai/issues/63)) ([17148ea](https://github.com/SolomonAIEngineering/solomonai/commit/17148ea4d7f098a7951697fa59a3ad9862cb1772))
+
+# [0.36.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.35.0...v0.36.0) (2024-10-17)
+
+
+### Features
+
+* wip ([d87e4bc](https://github.com/SolomonAIEngineering/solomonai/commit/d87e4bc8e3885f6c5dbcf5f509bd6844d4807bf3))
+
+# [0.35.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.34.0...v0.35.0) (2024-10-17)
+
+
+### Features
+
+* wip ([cce6cfe](https://github.com/SolomonAIEngineering/solomonai/commit/cce6cfe403fd6a56d4947499bbb98d893cac6e04))
+* wip ([acd4d1c](https://github.com/SolomonAIEngineering/solomonai/commit/acd4d1c20cc01f663dcdc3bb6251f1dd5d9b09b2))
+
+# [0.34.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.33.0...v0.34.0) (2024-10-17)
+
+
+### Features
+
+* wip ([#62](https://github.com/SolomonAIEngineering/solomonai/issues/62)) ([a4dd8b6](https://github.com/SolomonAIEngineering/solomonai/commit/a4dd8b60d6c89cab9cdbcde30d44359a765db1f4))
+
+# [0.33.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.32.0...v0.33.0) (2024-10-16)
+
+
+### Features
+
+* relax sync exp ([53b1de4](https://github.com/SolomonAIEngineering/solomonai/commit/53b1de4eb561c0f067b6ff73ffcc6adeab96f324))
+
+# [0.32.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.31.0...v0.32.0) (2024-10-16)
+
+
+### Features
+
+* wip ([ef38776](https://github.com/SolomonAIEngineering/solomonai/commit/ef38776a0f9490df07e619b3464d6b990d26bc1a))
+
+# [0.31.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.30.0...v0.31.0) (2024-10-16)
+
+
+### Features
+
+* wip ([44f0468](https://github.com/SolomonAIEngineering/solomonai/commit/44f04682323dd7cb3a5601d55c118af523b8fe13))
+
+# [0.30.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.29.0...v0.30.0) (2024-10-16)
+
+
+### Features
+
+* wip ([b0a615a](https://github.com/SolomonAIEngineering/solomonai/commit/b0a615afd13d6b0769fd8aec75c9a55461d37c7f))
+
+# [0.29.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.28.0...v0.29.0) (2024-10-16)
+
+
+### Features
+
+* wip ([8851665](https://github.com/SolomonAIEngineering/solomonai/commit/8851665528d8fe8984a9fcd43ff1748593a8a14b))
+
+# [0.28.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.27.0...v0.28.0) (2024-10-16)
+
+
+### Features
+
+* wip ([3ad7a9a](https://github.com/SolomonAIEngineering/solomonai/commit/3ad7a9af31d982422c17a02cdfcbc6e11fd55e15))
+* wip ([eb93bd6](https://github.com/SolomonAIEngineering/solomonai/commit/eb93bd665afa51153809137bf3e46b15890c1d00))
+
+# [0.27.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.26.0...v0.27.0) (2024-10-16)
+
+
+### Features
+
+* wip ([be13ffc](https://github.com/SolomonAIEngineering/solomonai/commit/be13ffc7d49e048bc1542f6f358570d6840e21c9))
+
+# [0.26.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.25.0...v0.26.0) (2024-10-16)
+
+
+### Features
+
+* wip ([04cf47f](https://github.com/SolomonAIEngineering/solomonai/commit/04cf47febee8ab64689dcc6807c1d7a6cf40f66d))
+
+# [0.25.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.24.0...v0.25.0) (2024-10-16)
+
+
+### Features
+
+* wip ([34d13ce](https://github.com/SolomonAIEngineering/solomonai/commit/34d13ce1ace82663cd759b3ad5cd1cb2ca4163f0))
+
+# [0.24.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.23.0...v0.24.0) (2024-10-16)
+
+
+### Features
+
+* wip ([3d8ed78](https://github.com/SolomonAIEngineering/solomonai/commit/3d8ed78cac949947ce498f6daeee93b3fa317170))
+
+# [0.23.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.22.0...v0.23.0) (2024-10-15)
+
+
+### Features
+
+* remove canadaa support ([881270b](https://github.com/SolomonAIEngineering/solomonai/commit/881270bd0a5c985fb96cd7ed035f44ce261cdca5))
+
+# [0.22.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.21.0...v0.22.0) (2024-10-15)
+
+
+### Features
+
+* enable financial service to account for cursor when triggering account sync operations ([#60](https://github.com/SolomonAIEngineering/solomonai/issues/60)) ([ff55fef](https://github.com/SolomonAIEngineering/solomonai/commit/ff55fef6564bed7ccb6aa72fba6c4b7a50ad99b3))
+
+# [0.21.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.20.0...v0.21.0) (2024-10-15)
+
+
+### Features
+
+* checkpoint ([595ea69](https://github.com/SolomonAIEngineering/solomonai/commit/595ea693b0d9edf073eeb1f1af50cfeabfdbc9c7))
+
 # [0.20.0](https://github.com/SolomonAIEngineering/solomonai/compare/v0.19.0...v0.20.0) (2024-10-13)
 
 
