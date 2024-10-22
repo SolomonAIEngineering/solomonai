@@ -79,7 +79,18 @@ const menuConfig: Group[] = [
         href: "/team-insights",
         label: "Team Insights",
         icon: GitGraphIcon,
-        submenus: [],
+        submenus: [
+          {
+            href: "/team-insights/income",
+            label: "Income",
+            active: false,
+          },
+          {
+            href: "/team-insights/expense",
+            label: "Expense",
+            active: false,
+          },
+        ],
         active: false,
       }
     ],
