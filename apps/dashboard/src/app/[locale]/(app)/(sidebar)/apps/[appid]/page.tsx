@@ -1,11 +1,12 @@
 import AppConfigDetail from "@/components/apps/app-config-detail.server";
 import AppsDeveloperDetail from "@/components/apps/app-developer-detail.client";
 import DisconnectAppButton from "@/components/buttons/apps/disconnect-app-button";
-import InstallAppButton from "@/components/buttons/apps/install-app-button";
+import InstallAppButton from "@/components/buttons/apps/install-apps";
 import { ContentLayout } from "@/components/panel/content-layout";
 import { PortalViewWrapper } from "@/components/portal-views/portal-view-wrapper";
 import config from "@/config";
 import { getAppsMap } from "@midday/app-store";
+import { IntegrationCategory } from "@midday/app-store/types";
 import { getUser } from "@midday/supabase/cached-queries";
 import { createClient } from "@midday/supabase/server";
 import { Button } from "@midday/ui/button";
@@ -60,7 +61,7 @@ export default async function Page({
     }
 
     // we check if the app is currently installed for the given user
-    const isAppInstalled = data?.some((installedApp) => installedApp.app_id === params.appid);
+    const isAppInstalled = data?.some((installedApp) => installedApp.app_id === params.appid) ?? false;
 
     // TODO: based on the type of integration, we want to query the backend for income and expense metrics and enable the end user to perform some degree of stress test on this
 
@@ -114,8 +115,15 @@ export default async function Page({
                         </Button>
                     </div>
                     <div>
-                        {isAppInstalled && (
+                        {isAppInstalled ? (
                             <DisconnectAppButton appId={app.id} appName={app.name} />
+                        ) : (
+                            <InstallAppButton
+                                id={app.id}
+                                installed={isAppInstalled}
+                                category={app.category}
+                                active={app.active}
+                            />
                         )}
                     </div>
                 </div>
@@ -158,15 +166,17 @@ export default async function Page({
                     </div>
                     <div className="col-span-2 flex flex-col gap-2 p-[2%]">
                         <AppsDeveloperDetail config={{
-                                company: config.company,
-                                webUrl: config.webUrl,
-                                documentationUrl: config.documentationUrl,
-                                termsAndConditionsUrl: config.termsAndConditionsUrl,
-                                privacyPolicyUrl: config.privacyPolicyUrl,
-                            }
+                            company: config.company,
+                            webUrl: config.webUrl,
+                            documentationUrl: config.documentationUrl,
+                            termsAndConditionsUrl: config.termsAndConditionsUrl,
+                            privacyPolicyUrl: config.privacyPolicyUrl,
+                        }
                         } />
                     </div>
                 </div>
+
+                {/** The actual  */}
             </PortalViewWrapper>
         </ContentLayout>
     );

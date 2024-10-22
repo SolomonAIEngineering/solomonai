@@ -211,18 +211,18 @@ const menuConfig: Group[] = [
             label: "All Apps",
             active: false,
           },
-          {
-            // This is where users can view all available apps that they have installed on their account
-            href: "/apps/installed",
-            label: "My Apps | Beta",
-            active: false,
-          },
-          {
-            // This is where users can play with their data against an app prior to installing it
-            href: "/apps/sandbox",
-            label: "Sandbox | Beta",
-            active: false,
-          }
+          // {
+          //   // This is where users can view all available apps that they have installed on their account
+          //   href: "/apps/installed",
+          //   label: "My Apps | Beta",
+          //   active: false,
+          // },
+          // {
+          //   // This is where users can play with their data against an app prior to installing it
+          //   href: "/apps/sandbox",
+          //   label: "Sandbox | Beta",
+          //   active: false,
+          // }
       ],
         active: false,
       },

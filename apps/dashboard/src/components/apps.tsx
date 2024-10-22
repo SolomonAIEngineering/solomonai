@@ -78,8 +78,8 @@ export function Apps({
   settings,
 }: { user: User; installedApps: string[]; settings: Record<string, any>[] }) {
   const searchParams = useSearchParams();
-  const isInstalledPage = searchParams.get("tab") === "installed";
-  const search = searchParams.get("q");
+  const isInstalledPage = searchParams?.get("tab") === "installed";
+  const search = searchParams?.get("q");
   const router = useRouter();
 
   const [activeCategory, setActiveCategory] =
@@ -193,7 +193,7 @@ export const AppsMarketplaceSidebar = ({ isSidebarCollapsed, setIsSidebarCollaps
 }) => {
   return (
     <motion.div
-      className="flex justify-between items-center mb-6 p-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-md"
+      className="flex justify-between items-center mb-6 p-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-none"
       animate={{
         width: isSidebarCollapsed ? '60px' : '240px',
       }}

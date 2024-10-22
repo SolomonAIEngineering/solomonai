@@ -353,7 +353,7 @@ const AppSelectorMenu: React.FC<AppSelectorMenuProps> = ({
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           {/** place to the integration page if clicked */}
-          <Link href={`/apps/integration/${appId}`} passHref legacyBehavior>
+          <Link href={`/apps/${appId}`} passHref legacyBehavior>
             <DropdownMenuItem>
               <GlobeIcon className="mr-2 h-4 w-4" />
               <span>Overview</span>
