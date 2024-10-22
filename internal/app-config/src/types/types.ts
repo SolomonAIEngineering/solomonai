@@ -109,6 +109,5 @@ export type {
   SiteConfig,
   SiteMetadata,
   TwitterMetadata,
-  Viewport
+  Viewport,
 };
-

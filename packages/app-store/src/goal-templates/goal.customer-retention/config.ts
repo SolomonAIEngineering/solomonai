@@ -101,7 +101,7 @@ const customerRetentionGoalTemplate: IntegrationConfig = {
         Number(variables["Custom Timeline (in days)"]) || 365;
 
       const customersToRetain = Math.round(
-        currentCustomers * (targetRetentionRate / 100)
+        currentCustomers * (targetRetentionRate / 100),
       );
       const projectedChurnRate = 100 - targetRetentionRate;
 
@@ -144,7 +144,7 @@ const customerRetentionGoalTemplate: IntegrationConfig = {
   supported_features: undefined,
   last_sync_at: new Date().toISOString(),
   sync_status: undefined,
-  auth_method: "none"
+  auth_method: "none",
 };
 
 export default customerRetentionGoalTemplate;

@@ -89,7 +89,7 @@ const expenseGrowthRateModelling: IntegrationConfig = {
   supported_features: undefined,
   last_sync_at: new Date().toISOString(),
   sync_status: undefined,
-  auth_method: "none"
+  auth_method: "none",
 };
 
 export default expenseGrowthRateModelling;

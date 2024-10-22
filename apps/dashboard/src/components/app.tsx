@@ -1,7 +1,11 @@
 import { disconnectAppAction } from "@/actions/disconnect-app-action";
 import config from "@/config";
 import { capitalize } from "@/utils/utils";
-import { EquationConfig, IntegrationCategory, IntegrationConfig } from '@midday/app-store/types';
+import {
+  EquationConfig,
+  IntegrationCategory,
+  IntegrationConfig,
+} from "@midday/app-store/types";
 import {
   Accordion,
   AccordionContent,
@@ -11,11 +15,38 @@ import {
 import { Badge } from "@midday/ui/badge";
 import { Button } from "@midday/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@midday/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@midday/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@midday/ui/dropdown-menu";
 import { ScrollArea } from "@midday/ui/scroll-area";
 import { Sheet, SheetContent, SheetHeader } from "@midday/ui/sheet";
 import { useToast } from "@midday/ui/use-toast";
-import { Cloud, Github, GlobeIcon, Keyboard, LifeBuoy, Mail, MessageSquare, MoreVertical, Plus, PlusCircle, Settings, UserPlus, Users } from "lucide-react";
+import {
+  Cloud,
+  Github,
+  GlobeIcon,
+  Keyboard,
+  LifeBuoy,
+  Mail,
+  MessageSquare,
+  MoreVertical,
+  Plus,
+  PlusCircle,
+  Settings,
+  UserPlus,
+  Users,
+} from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import Link from "next/link";
 import { parseAsBoolean, parseAsString, useQueryStates } from "nuqs";
@@ -38,7 +69,7 @@ export function App({
   category,
   userSettings,
   equation,
-  cfg
+  cfg,
 }: {
   id: string;
   logo: React.ComponentType;
@@ -66,7 +97,6 @@ export function App({
   const [isModellingDialogOpen, setIsModellingDialogOpen] = useState(false);
   const { toast } = useToast();
 
-
   const handleDisconnect = () => {
     disconnectApp.execute({ appId: id });
   };
@@ -74,7 +104,10 @@ export function App({
   const handleOnInitialize = () => {
     setLoading(true);
     try {
-      if (category === IntegrationCategory.Modelling || category === IntegrationCategory.GoalTemplates) {
+      if (
+        category === IntegrationCategory.Modelling ||
+        category === IntegrationCategory.GoalTemplates
+      ) {
         onInitialize(() => {
           setIsModellingDialogOpen(true);
         });
@@ -107,16 +140,23 @@ export function App({
           <Logo />
 
           <div className="flex">
-
             {installed && (
               <div className="text-green-600 bg-green-100 text-[14px] dark:bg-green-900 dark:text-green-300 px-3 py-1 rounded-full font-mono">
                 Installed
               </div>
             )}
 
-            <AppSelectorMenu appId={id} installed={installed} isActive={active} appName={name} detailsCallback={() => setParams({
-              app: id,
-            })} />
+            <AppSelectorMenu
+              appId={id}
+              installed={installed}
+              isActive={active}
+              appName={name}
+              detailsCallback={() =>
+                setParams({
+                  app: id,
+                })
+              }
+            />
           </div>
         </div>
 
@@ -309,7 +349,11 @@ export function App({
       <AppsModellingModal
         isOpen={isModellingDialogOpen}
         onClose={() => setIsModellingDialogOpen(false)}
-        appType={category as IntegrationCategory.GoalTemplates | IntegrationCategory.Modelling}
+        appType={
+          category as
+            | IntegrationCategory.GoalTemplates
+            | IntegrationCategory.Modelling
+        }
         id={id}
         installed={installed || false}
         cfg={cfg}
@@ -330,15 +374,13 @@ const AppSelectorMenu: React.FC<AppSelectorMenuProps> = ({
   appName,
   appId,
   installed,
-  detailsCallback
+  detailsCallback,
 }: AppSelectorMenuProps) => {
-
   const disconnectApp = useAction(disconnectAppAction);
 
   const handleDisconnect = () => {
     disconnectApp.execute({ appId: appId });
   };
-
 
   return (
     <DropdownMenu>
@@ -367,16 +409,18 @@ const AppSelectorMenu: React.FC<AppSelectorMenuProps> = ({
             <span>Details</span>
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
-          {installed &&
+          {installed && (
             <DropdownMenuItem onClick={handleDisconnect}>
               <Keyboard className="mr-2 h-4 w-4" />
-              <span> {disconnectApp.status === "executing"
-                ? "Disconnecting..."
-                : "Disconnect App"}
+              <span>
+                {" "}
+                {disconnectApp.status === "executing"
+                  ? "Disconnecting..."
+                  : "Disconnect App"}
               </span>
               <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
             </DropdownMenuItem>
-          }
+          )}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         {/* <DropdownMenuGroup>
@@ -429,5 +473,5 @@ const AppSelectorMenu: React.FC<AppSelectorMenuProps> = ({
         <DropdownMenuSeparator /> */}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
-}
+  );
+};

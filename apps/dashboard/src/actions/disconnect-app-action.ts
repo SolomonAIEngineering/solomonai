@@ -22,7 +22,7 @@ export const disconnectAppAction = authActionClient
     console.log("disconnection app with following params", {
       appId: appId,
       teamId: user?.team_id,
-    })
+    });
 
     const { data, error } = await supabase
       .from("apps")

@@ -107,7 +107,7 @@ const smallBusinessGoalTemplate: IntegrationConfig = {
       const targetValue = Number(variables["Target Value"] ?? 0);
       const timeline = String(variables["Timeline"] ?? "quarterly");
       const customTimeline = Number(
-        variables["Custom Timeline (in days)"] ?? 90
+        variables["Custom Timeline (in days)"] ?? 90,
       );
 
       const goalProgress =
@@ -136,13 +136,13 @@ const smallBusinessGoalTemplate: IntegrationConfig = {
 
       const today = new Date();
       const projectedAchievementDate = new Date(
-        today.setDate(today.getDate() + timelineInDays)
+        today.setDate(today.getDate() + timelineInDays),
       );
 
       // Simple success probability calculation (can be made more sophisticated)
       const successProbability = Math.min(
         100,
-        Math.max(0, 100 - (remainingValue / targetValue) * 100)
+        Math.max(0, 100 - (remainingValue / targetValue) * 100),
       );
 
       return {
@@ -150,7 +150,7 @@ const smallBusinessGoalTemplate: IntegrationConfig = {
         remaining_value: remainingValue,
         daily_target: dailyTarget,
         projected_achievement_date: Number(
-          projectedAchievementDate.toISOString().split("T")[0]
+          projectedAchievementDate.toISOString().split("T")[0],
         ),
         success_probability: successProbability,
       };
@@ -165,7 +165,7 @@ const smallBusinessGoalTemplate: IntegrationConfig = {
   supported_features: undefined,
   last_sync_at: new Date().toISOString(),
   sync_status: undefined,
-  auth_method: "none"
+  auth_method: "none",
 };
 
 export default smallBusinessGoalTemplate;

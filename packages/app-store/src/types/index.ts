@@ -334,4 +334,3 @@ export type AppWithMethods = AppSchema & IntegrationMethods;
 
 export { IntegrationCategory };
 export type { IntegrationConfig, Settings };
-

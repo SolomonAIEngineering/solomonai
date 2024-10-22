@@ -187,7 +187,10 @@ export function Apps({
   );
 }
 
-export const AppsMarketplaceSidebar = ({ isSidebarCollapsed, setIsSidebarCollapsed }: {
+export const AppsMarketplaceSidebar = ({
+  isSidebarCollapsed,
+  setIsSidebarCollapsed,
+}: {
   isSidebarCollapsed: boolean;
   setIsSidebarCollapsed: (isCollapsed: boolean) => void;
 }) => {
@@ -195,7 +198,7 @@ export const AppsMarketplaceSidebar = ({ isSidebarCollapsed, setIsSidebarCollaps
     <motion.div
       className="flex justify-between items-center mb-6 p-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-none"
       animate={{
-        width: isSidebarCollapsed ? '60px' : '240px',
+        width: isSidebarCollapsed ? "60px" : "240px",
       }}
       transition={{ duration: 0.3 }}
     >

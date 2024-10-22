@@ -9,7 +9,8 @@ const breakEvenAnalysisExpenseModelling: IntegrationConfig = {
   active: true,
   logo: Logo,
   short_description: "Calculate your break-even point and profit projections.",
-  description: "Break-Even Analysis helps determine how many units of a product you need to sell to cover all expenses and project potential profits. It considers fixed costs, price per unit, and variable cost per unit to calculate the break-even point and provide insights into your business's financial performance.",
+  description:
+    "Break-Even Analysis helps determine how many units of a product you need to sell to cover all expenses and project potential profits. It considers fixed costs, price per unit, and variable cost per unit to calculate the break-even point and provide insights into your business's financial performance.",
   images: [],
   onInitialize: initialize,
   settings: [
@@ -34,7 +35,8 @@ const breakEvenAnalysisExpenseModelling: IntegrationConfig = {
     {
       id: "variable_cost_per_unit",
       label: "Variable Cost per Unit",
-      description: "Enter the variable cost per unit of your product (e.g., materials, direct labor)",
+      description:
+        "Enter the variable cost per unit of your product (e.g., materials, direct labor)",
       type: "number",
       required: true,
       value: 0,
@@ -71,7 +73,8 @@ const breakEvenAnalysisExpenseModelling: IntegrationConfig = {
     ],
   },
   equation: {
-    formula: "Break-Even Point = Fixed Costs / (Price per Unit - Variable Cost per Unit)",
+    formula:
+      "Break-Even Point = Fixed Costs / (Price per Unit - Variable Cost per Unit)",
     variables: {
       "Fixed Costs": {
         label: "Fixed Costs",
@@ -85,7 +88,8 @@ const breakEvenAnalysisExpenseModelling: IntegrationConfig = {
       },
       "Variable Cost per Unit": {
         label: "Variable Cost per Unit",
-        description: "Variable cost per unit of your product (e.g., materials, direct labor)",
+        description:
+          "Variable cost per unit of your product (e.g., materials, direct labor)",
         unit: "currency",
       },
       "Sales Volume": {
@@ -99,15 +103,17 @@ const breakEvenAnalysisExpenseModelling: IntegrationConfig = {
       const pricePerUnit = variables["Price per Unit"] ?? 0;
       const variableCostPerUnit = variables["Variable Cost per Unit"] ?? 0;
       const salesVolume = variables["Sales Volume"] ?? 0;
-      const breakEvenPoint = pricePerUnit !== 0
-        ? fixedCosts / (pricePerUnit - variableCostPerUnit)
-        : 0;
+      const breakEvenPoint =
+        pricePerUnit !== 0
+          ? fixedCosts / (pricePerUnit - variableCostPerUnit)
+          : 0;
       const breakEvenRevenue = breakEvenPoint * pricePerUnit;
       const totalRevenue = salesVolume * pricePerUnit;
       const totalCosts = fixedCosts + variableCostPerUnit * salesVolume;
       const profit = totalRevenue - totalCosts;
       const contributionMargin = pricePerUnit - variableCostPerUnit;
-      const profitMargin = totalRevenue !== 0 ? (profit / totalRevenue) * 100 : 0;
+      const profitMargin =
+        totalRevenue !== 0 ? (profit / totalRevenue) * 100 : 0;
 
       return {
         break_even_point: breakEvenPoint,
@@ -129,7 +135,7 @@ const breakEvenAnalysisExpenseModelling: IntegrationConfig = {
   supported_features: undefined,
   last_sync_at: new Date().toISOString(),
   sync_status: undefined,
-  auth_method: "none"
+  auth_method: "none",
 };
 
 export default breakEvenAnalysisExpenseModelling;

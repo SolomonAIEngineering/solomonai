@@ -16,7 +16,7 @@ const LoadingDots = () => (
 
 const LoadingUserDataFromBackend: React.FC<LoadingUserDataFromBackendProps> = ({
   message = "Welcome To Solomon AI",
-  subMessage = "Loading your personalized experience..."
+  subMessage = "Loading your personalized experience...",
 }) => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-black transition-colors duration-1000 animate-pulse">
@@ -43,7 +43,7 @@ const LoadingUserDataFromBackend: React.FC<LoadingUserDataFromBackendProps> = ({
               {subMessage}
             </p>
           </div>
-          
+
           {/* Loading dots with proper animation */}
           <LoadingDots />
         </div>

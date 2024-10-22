@@ -6,9 +6,10 @@ import {
   FileAxis3D,
   FileText,
   InboxIcon,
-  LayoutGrid, Settings,
+  LayoutGrid,
+  Settings,
   SquareChartGantt,
-  TableCellsMergeIcon
+  TableCellsMergeIcon,
 } from "lucide-react";
 
 /**
@@ -82,7 +83,7 @@ const menuConfig: Group[] = [
           },
         ],
         active: false,
-      }
+      },
     ],
   },
   {
@@ -223,7 +224,7 @@ const menuConfig: Group[] = [
           //   label: "Sandbox | Beta",
           //   active: false,
           // }
-      ],
+        ],
         active: false,
       },
     ],

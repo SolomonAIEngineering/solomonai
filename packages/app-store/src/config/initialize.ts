@@ -5,7 +5,7 @@ export interface InitializerOptions {
 
 export const configureDefaultInitializer = (
   appName: string,
-  options: InitializerOptions = {}
+  options: InitializerOptions = {},
 ): ((callback?: () => void) => void) => {
   const { timeout = 5000, retries = 3 } = options;
 
@@ -25,7 +25,7 @@ export const configureDefaultInitializer = (
           executeCallback();
         } else {
           throw new Error(
-            `${appName} initialization failed after ${retries} attempts`
+            `${appName} initialization failed after ${retries} attempts`,
           );
         }
       }
