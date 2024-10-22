@@ -3,12 +3,28 @@ import { Skeleton } from "@midday/ui/skeleton"
 import { CreditCard, LayoutDashboard, PiggyBank, Receipt, Settings, User } from "lucide-react"
 import React from "react"
 
+/**
+ * IncomeMetricsSkeleton Component
+ * 
+ * This component renders a skeleton layout for the Income Metrics view.
+ * It displays placeholder elements for various sections of the income dashboard,
+ * including the header, balance card, account summaries, recent activity, and a card display.
+ * 
+ * The skeleton is used to improve perceived performance by showing a loading state
+ * while the actual data is being fetched or processed.
+ * 
+ * @component
+ * @example
+ * ```tsx
+ * <IncomeMetricsSkeleton />
+ * ```
+ */
 export const IncomeMetricsSkeleton: React.FC = () => {
     return (
         <div className="flex h-screen bg-gray-100">
             {/* Main content */}
             <div className="flex-1 p-8 overflow-auto">
-                {/* Header */}
+                {/* Header section */}
                 <div className="mb-8 flex justify-between items-center">
                     <Skeleton className="h-8 w-32" />
                     <div className="flex space-x-2">
@@ -17,7 +33,7 @@ export const IncomeMetricsSkeleton: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Balance card */}
+                {/* Balance card section */}
                 <Card className="mb-8">
                     <CardContent className="p-6">
                         <div className="flex justify-between items-center mb-4">
@@ -31,12 +47,12 @@ export const IncomeMetricsSkeleton: React.FC = () => {
                                 <Skeleton className="h-8 w-8" />
                             </div>
                         </div>
-                        {/* Cash flow chart */}
+                        {/* Cash flow chart placeholder */}
                         <Skeleton className="h-48 w-full" />
                     </CardContent>
                 </Card>
 
-                {/* Account summaries */}
+                {/* Account summaries section */}
                 <div className="grid grid-cols-3 gap-4 mb-8">
                     {['Business account', 'Total Saving', 'Tax Reserve'].map((title) => (
                         <Card key={title}>
@@ -54,7 +70,7 @@ export const IncomeMetricsSkeleton: React.FC = () => {
                     ))}
                 </div>
 
-                {/* Recent activity and card */}
+                {/* Recent activity and card section */}
                 <div className="grid grid-cols-3 gap-4">
                     <Card className="col-span-2">
                         <CardHeader>

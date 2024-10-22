@@ -6,15 +6,31 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CategoryMonthlyExpenditure, ExpenseMetrics, MonthlyExpenditure } from "@solomon-ai/client-typescript-sdk";
 import { useMemo, useState } from "react";
 
+/**
+ * Props for the ExpenseMetricsView component.
+ * @interface ExpenseMetricsViewProps
+ * @extends {React.HTMLAttributes<HTMLDivElement>}
+ */
 interface ExpenseMetricsViewProps extends React.HTMLAttributes<HTMLDivElement> {
+    /** Optional CSS class name for styling */
     className?: string;
+    /** User ID for the current user */
     userId: string;
+    /** Currency code (e.g., 'USD', 'EUR') */
     currency: string;
+    /** Array of expense metrics data */
     expenseMetrics?: Array<ExpenseMetrics>;
+    /** Array of monthly expenditure data */
     monthlyExpenseMetrics?: Array<MonthlyExpenditure>;
+    /** Array of category-wise monthly expenditure data */
     expenseMetricsCategories?: Array<CategoryMonthlyExpenditure>;
 }
 
+/**
+ * ExpenseMetricsView component displays various expense metrics and charts.
+ * @param {ExpenseMetricsViewProps} props - The component props
+ * @returns {JSX.Element} The rendered ExpenseMetricsView component
+ */
 const ExpenseMetricsView: React.FC<ExpenseMetricsViewProps> = ({ className, userId, currency, expenseMetrics, monthlyExpenseMetrics, expenseMetricsCategories }) => {
     // format all data into positive values (only use abs)
     if (expenseMetrics) {
@@ -44,13 +60,27 @@ const ExpenseMetricsView: React.FC<ExpenseMetricsViewProps> = ({ className, user
 }
 
 
+/**
+ * Props for the ExpenseMetricsOverTime component.
+ * @interface ExpenseMetricsOverTimeProps
+ * @extends {React.HTMLAttributes<HTMLDivElement>}
+ */
 interface ExpenseMetricsOverTimeProps extends React.HTMLAttributes<HTMLDivElement> {
+    /** Optional CSS class name for styling */
     className?: string;
+    /** Array of expense metrics data */
     expenseMetrics?: Array<ExpenseMetrics>;
+    /** Currency code (e.g., 'USD', 'EUR') */
     currency: string;
+    /** Flag to disable the component */
     disabled?: boolean;
 }
 
+/**
+ * ExpenseMetricsOverTime component displays expense metrics over time with category filtering.
+ * @param {ExpenseMetricsOverTimeProps} props - The component props
+ * @returns {JSX.Element} The rendered ExpenseMetricsOverTime component
+ */
 const ExpenseMetricsOverTime: React.FC<ExpenseMetricsOverTimeProps> = ({
     className,
     expenseMetrics,
@@ -65,22 +95,20 @@ const ExpenseMetricsOverTime: React.FC<ExpenseMetricsOverTimeProps> = ({
     
     const dataKeys = ["expense"];
 
-    // Filter the expense metrics based on the selected category
+    /**
+     * Filters expense metrics based on the selected category.
+     * @type {Array<ExpenseMetrics>}
+     */
     const filteredExpenseMetrics = useMemo(() => {
         if (!expenseMetrics) return [];
         if (selectedCategory === 'All') return expenseMetrics;
         return expenseMetrics.filter(metric => metric.personalFinanceCategoryPrimary === selectedCategory);
     }, [expenseMetrics, selectedCategory]);
 
-    // now we check if the filtered expense metrics data and if not we return a div stating no data exists for this
-    if (!filteredExpenseMetrics || filteredExpenseMetrics.length === 0) {
-        return (
-            <div className="flex items-center justify-center h-96">
-                <p className="text-gray-500">No data available for this category</p>
-            </div>
-        );
-    }
-
+    /**
+     * Transforms expense metrics data for chart rendering.
+     * @type {Array<{date: string, expense: number}>}
+     */
     const chartData = filteredExpenseMetrics.map((item) => {
         const year = parseInt(item.month?.toString().slice(0, 4) || "");
         const month = parseInt(item.month?.toString().slice(4, 6) || "") - 1; // JavaScript months are 0-indexed
@@ -91,6 +119,10 @@ const ExpenseMetricsOverTime: React.FC<ExpenseMetricsOverTimeProps> = ({
         };
     });
 
+    /**
+     * Calculates and formats expense growth rate data for chart rendering.
+     * @type {Array<{date: string, growthRate: number}>}
+     */
     const expansiveChartData = filteredExpenseMetrics
         .map((item) => ({
             date: new Date(parseInt(item.month?.toString().slice(0, 4) || ""), parseInt(item.month?.toString().slice(4, 6) || "") - 1),

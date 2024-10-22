@@ -404,7 +404,7 @@ const AnalyticsChart = <T extends BarChartMultiDataPoint>({
                     </CardHeader>
                     <CardContent className="px-2 sm:p-6">
                         <div className="aspect-auto h-[400px] w-full">
-                            <BaseChartContainer config={chartConfig} className="aspect-auto h-[400px] w-full">
+                            <BaseChartContainer config={chartConfig} className="aspect-auto h-full w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     {renderChart()}
                                 </ResponsiveContainer>
