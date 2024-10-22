@@ -1,5 +1,7 @@
 "use client";
 
+"use client";
+
 import { format, isValid, parseISO } from "date-fns";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -14,6 +16,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { cn } from "../../../utils";
 import { cn } from "../../../utils";
 import { Button } from "../../button";
 import {
@@ -55,6 +58,7 @@ export type ZoomableChartWithDrilldownProps = {
   onShare?: () => void;
   onExportToModel?: () => void;
   className?: string;
+  className?: string;
 };
 
 const chartConfig = {
@@ -75,6 +79,7 @@ export function ZoomableChartWithDrilldown({
   onDrilldown,
   onShare,
   onExportToModel,
+  className,
   className,
 }: ZoomableChartWithDrilldownProps) {
   const [data, setData] = useState<DataPoint[]>(initialData || []);

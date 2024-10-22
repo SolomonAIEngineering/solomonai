@@ -11,6 +11,7 @@ import {
   FileAxis3D,
   FileText,
   GitGraphIcon,
+  GitGraphIcon,
   InboxIcon,
   LayoutGrid,
   PieChart,
