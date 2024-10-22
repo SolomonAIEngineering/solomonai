@@ -7,8 +7,8 @@ import {
   FileText,
   InboxIcon,
   LayoutGrid, Settings,
+  SquareChartGantt,
   TableCellsMergeIcon
-  SquareChartGantt
 } from "lucide-react";
 
 /**
