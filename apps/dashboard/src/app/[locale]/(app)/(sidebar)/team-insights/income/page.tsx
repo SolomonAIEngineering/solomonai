@@ -3,6 +3,7 @@ import { AccountSummarySection } from "@/components/cash-flow/account-summary-se
 import ConnectAccountServerWrapper from "@/components/connect-account-server-wrapper";
 import { DateRangeSelector } from "@/components/date-range-selector";
 import { InboxViewSkeleton } from "@/components/inbox-skeleton";
+import { IncomeAnalyticsSkeleton } from "@/components/income-analytics.skeleton";
 import { ContentLayout } from "@/components/panel/content-layout";
 import config from "@/config";
 import { getDefaultDateRange } from "@/config/chart-date-range-default-picker";
@@ -39,9 +40,9 @@ export default async function Income({ searchParams }: Props) {
     const effectivePageSize = pageSize || "50";
 
     return (
-        <Suspense fallback={<InboxViewSkeleton ascending />}>
-            <ContentLayout title="Team Insights - Incomes">
-                <ConnectAccountServerWrapper>
+        <ContentLayout title="Team Insights - Incomes">
+            <ConnectAccountServerWrapper>
+                <Suspense fallback={<IncomeAnalyticsSkeleton />}>
                     <div className="mt-5">
                         <div className="flex flex-col gap-2">
                             <AccountSummarySection
@@ -61,8 +62,8 @@ export default async function Income({ searchParams }: Props) {
                             <IncomeMetricsServer userId={userId} currency={"USD"} />
                         </div>
                     </div>
-                </ConnectAccountServerWrapper>
-            </ContentLayout>
-        </Suspense>
+                </Suspense>
+            </ConnectAccountServerWrapper>
+        </ContentLayout>
     );
 }

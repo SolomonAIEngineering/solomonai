@@ -1,5 +1,5 @@
-import AppConfigDetail from "@/components/apps/app-config-detail.server";
-import AppsDeveloperDetail from "@/components/apps/app-developer-detail.client";
+import AppConfigDetail from "@/components/apps-config-detail";
+import AppsDeveloperDetail from "@/components/apps-developer-detail";
 import DisconnectAppButton from "@/components/buttons/apps/disconnect-app-button";
 import InstallAppButton from "@/components/buttons/apps/install-apps";
 import { ContentLayout } from "@/components/panel/content-layout";

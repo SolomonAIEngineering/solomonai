@@ -5,6 +5,7 @@ import { ExpenseMetricsChart } from "@/components/charts/team-insights/expense-m
 import { IncomeMetricsChart } from "@/components/charts/team-insights/income-metrics/income-metrics-chart";
 import ConnectAccountServerWrapper from "@/components/connect-account-server-wrapper";
 import { DateRangeSelector } from "@/components/date-range-selector";
+import { ExpenseAnalyticsSkeleton } from "@/components/expense-analytics.skeleton";
 import { InboxViewSkeleton } from "@/components/inbox-skeleton";
 import { ContentLayout } from "@/components/panel/content-layout";
 import config from "@/config";
@@ -45,9 +46,9 @@ export default async function Expense({ searchParams }: Props) {
     const effectivePageSize = pageSize || "50";
 
     return (
-        <Suspense fallback={<InboxViewSkeleton ascending />}>
-            <ContentLayout title="Team Insights - Expenses">
-                <ConnectAccountServerWrapper>
+        <ContentLayout title="Team Insights - Expenses">
+            <ConnectAccountServerWrapper>
+                <Suspense fallback={<ExpenseAnalyticsSkeleton />}>
                     <div className="mt-5">
                         <div className="flex flex-col gap-2">
                             <AccountSummarySection
@@ -67,8 +68,9 @@ export default async function Expense({ searchParams }: Props) {
                             <ExpenseMetricsServer userId={userId} currency={"USD"} />
                         </div>
                     </div>
-                </ConnectAccountServerWrapper>
-            </ContentLayout>
-        </Suspense>
+                </Suspense>
+
+            </ConnectAccountServerWrapper>
+        </ContentLayout>
     );
 }
