@@ -41,10 +41,10 @@ jobs:
       - name: 📤 Pull Vercel Environment Information
         run: bunx vercel pull --yes --environment=development --token=${{ secrets.VERCEL_TOKEN }}
       - name: 🏗 Build Project Artifacts
-        run: bunx vercel build --dev --token=${{ secrets.VERCEL_TOKEN }}
+        run: bunx vercel build --token=${{ secrets.VERCEL_TOKEN }}
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
       - name: Deploy Project Artifacts to Vercel
         run: |
-          bunx vercel deploy --prebuilt --dev --archive=tgz --token=${{ secrets.VERCEL_TOKEN }} > domain.txt
+          bunx vercel deploy --prebuilt --archive=tgz --token=${{ secrets.VERCEL_TOKEN }} > domain.txt
           bunx vercel alias --scope=${{ secrets.VERCEL_ORG_ID }} --token=${{ secrets.VERCEL_TOKEN }} set `cat domain.txt` app-business-staging.solomon-ai.app
