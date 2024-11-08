@@ -143,6 +143,21 @@ To set up the Financial Service API in a development environment, follow these s
 
    A successful response indicates that the API is operational.
 
+5. **Sample API Call:**
+
+   ```bash
+    curl -X 'POST' \
+    'https://engine-staging.solomon-ai-platform.com/v1/api.plaid/link' \
+    -H 'accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer SOLOMONAI' \
+    -d '{
+          "userId": "9293961c-df93-4d6d-a2cc-fc3e353b2d10",
+          "language": "en",
+          "accessToken": "a8a7a7b2-5a8d-4f6a-9d8d-5f8b8b8b8b8b",
+        }'
+   ```
+
 For detailed setup instructions, refer to the [Getting Started](#getting-started) section.
 
 ## Getting Started
