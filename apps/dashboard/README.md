@@ -1,1 +1,1 @@
-## Web Application - Dashboard
+## Web Application
